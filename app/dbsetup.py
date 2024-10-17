@@ -1,5 +1,5 @@
 from app.extensions import db
-from app.models import Permission, Role, generate_password_hash, UserStatus, User
+from app.models import Permission, Role, generate_password_hash, UserStatus, User, UserRole
 from datetime import datetime
 
 #=================================================================#
@@ -26,15 +26,23 @@ def setup_database(app):
             print("Permissions created successfully!")
 
             # Initialize roles and assigns 'Super' role with all permissions
-            super_role = Role(name='Super', description='Super admin role', permissions=([delete_permission, update_permission, read_permission, create_permission]))
-            # super_role.permissions.extend([create_permission, read_permission, update_permission, delete_permission])
+            super_role = Role(name='Super', description='Super admin role')
+            super_role.permissions.extend([create_permission, read_permission, update_permission, delete_permission])
             db.session.add(super_role)
             db.session.commit()
+            print("Super role created and permissions assigned successfully!")
 
             # Create default user and assign super role
-            user = User(email='superadmin@mail.com', password=generate_password_hash('SuperAdmin@123.?'), 
-                        status=UserStatus.ACTIVE, created_at=datetime.now(), roles=[super_role])
-            db.session.add(user)
+            super_user = User(email='superadmin@mail.com', status=UserStatus.ACTIVE, created_at=datetime.now())
+            super_user.set_password('SuperMan@123.?')
+            db.session.add(super_user)
             db.session.commit()
+            print("Super user created successfully!")
+
+            # Assign the User to Super Role
+            user_role = UserRole(user_id=super_user.id, role_id=super_role.id)
+            db.session.add(user_role)
+            db.session.commit()
+            print("Super user assigned super role successfully!")
 
             print('Database initialized with default permissions, role and user!')

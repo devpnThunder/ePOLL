@@ -98,11 +98,6 @@ def login():
         password = form.password.data
 
         error = None
-
-        # if not email:
-        #     error = "Email is require!"
-        # elif not password:
-        #     error = "Password is required!"
         
         user = User.query.filter_by(email=email).first()
         
@@ -113,10 +108,23 @@ def login():
                 login_user(user)
                 user.last_login = datetime.now()
                 db.session.commit()
-                flash("Logged in successfully!", "success")
-                return redirect(url_for('admin.dashboard'))
+
+                # Check if user has the role of 'Voter' or 'Super'
+                roles = [role.name for role in user.roles] 
+
+                if 'Voter' in roles:
+                    flash('Logged in successfully!', 'success')
+                    return redirect(url_for('account.profile'))
+                elif 'Super' in roles or 'Admin' in roles:
+                    flash('Logged in successfully!', 'success')
+                    return redirect(url_for('admin.dashboard'))
+                else:
+                    flash(f"Unknown role '{roles}', unable to determine where to redirect.", "danger")
+                    return redirect(url_for('auth.login'))
+                # flash("Logged in successfully!", "success")
+                # return redirect(url_for('admin.dashboard'))
             else:
-                flash("Login Unsuccessful. Please check email and password", "danger")
+                flash('Login Unsuccessful. Please check email and password', 'danger')
                 return redirect(url_for('auth.login'))
             
     return render_template('auth/login.html', form=form, title='Login')
