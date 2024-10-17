@@ -5,7 +5,8 @@ from app.config import App_Config
 from app.models import *
 from app.auth import *
 from app.admin import *
-from app.voter import *
+from app.account import *
+from app.poll import *
 from app.settings import sbp
 from app.dbsetup import setup_database
 from app.errors import register_error_handlers
@@ -37,8 +38,9 @@ def create_app():
     # Register app Blueprints
     app.register_blueprint(auth)
     app.register_blueprint(abp)
-    app.register_blueprint(vbp)
+    app.register_blueprint(accbp)
     app.register_blueprint(sbp)
+    app.register_blueprint(pbp)
 
 
     # Default route redirect to app login page

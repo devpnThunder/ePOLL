@@ -19,36 +19,34 @@
     <h3 class="display-5"><i class="bi bi-clipboard-data"></i>&nbsp;{{title}}</h3>
     <hr>
 
-    <div class="row align-content-center mb-3">
-        <div class="col text-start">
-            <a href="{{ url_for('settings.index') }}" class="btn btn-secondary"><i class="bi bi-arrow-left-circle-fill"></i>&nbsp; Back to Settings</a>&nbsp;
-            <a href="{{ url_for('settings.new_county') }}" class="btn btn-success"><i class="bi bi-plus-lg"></i>&nbsp; New County</a>
-        </div>
-
-        <div class="col text-end align-content-center">
-            <h5>Counties:&nbsp;<strong class="fst-italic"></strong></h4>
-        </div>
+    <div class="text-start mb-3">
+        <a href="{{ url_for('poll.index') }}" class="btn btn-secondary"><i class="bi bi-arrow-left-circle-fill"></i>&nbsp; Back to Polls</a>&nbsp;
     </div>
     <h4>List of {{title}}</h4>
     <div class="table-responsive">
         <table class="table table-hover align-content-center">
             <thead>
                 <tr class="align-middle">
-                    <th scope="col">Code</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Date Created</th>
+                    <th scope="col">Motion</th>
+                    <th scope="col">I Support</th>
+                    <th scope="col">I Do Not Support</th>
+                    <th scope="col">Others</th>
+                    <th scope="col">Highest Score</th>
                     <th scope="col"></th>
                 </tr>
             </thead>
             <tbody class="table-group-divider align-content-center">
-                {% for county in all_counties %}
+                {% for votes in pollList %}
                     <tr class="clickable-row align-middle" data-href="#">
-                        <th scope="row">{{county.code}}</th>
-                        <th scope="row">{{county.name}}</th>
-                        <th scope="row">{{county.created_at}}</th>
+                        <th scope="row">{{votes.motion.name}}</th>
+                        <th scope="row">{{count_isupport}}</th>
+                        <th scope="row">{{count_idonotsupport}}</th>
+                        <th scope="row">{{count_others}}</th>
+                        <th scope="row">{{highest_category}}&nbsp;{{highest_count}}</th>
                         <td scope="row">
-                            <a href="{{ url_for('settings.edit_county', id=county.id) }}"><i class="bi bi-pencil-square text-primary"></i></a> &nbsp;
-                            <a href="{{ url_for('settings.delete_county', id=county.id) }}"><i class="bi bi-trash text-danger"></i></a>
+                            <a href="{{ url_for('poll.edit_motion', id=motion.id) }}"><i class="bi bi-pencil-square text-primary"></i></a> &nbsp;
+                            <a href="{{ url_for('poll.delete_motion', id=motion.id) }}"><i class="bi bi-trash text-danger"></i></a> &nbsp;
+                            <a href="{{ url_for('poll.newvote', id=motion.id) }}"><i class="bi bi-person-check-fill text-success"></i></a>
                             {% for role in current_user.roles %}
                                 {% if role.name == 'Admin', 'Manager' %}
                                 <a href="{{ url_for('admin.newsaving', id=member.id) }}" class="btn btn-sm btn-success rounded-0"><i class="bi bi-plus-lg text-danger"></i>&nbsp;Savings</a> |

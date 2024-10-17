@@ -18,17 +18,17 @@
     <form method="POST">
         {{ form.hidden_tag() }}
         <div class="form-floating mb-3">
-            {{ form.code }}
-            {{ form.code.label }}
+            {{ form.motion_id }}
+            {{ form.motion_id.label }}
         </div>
         <div class="form-floating mb-3">
-            {{ form.name }}
-            {{ form.name.label }}
+            {{ form.text }}
+            {{ form.text.label }}
         </div>
         <hr>
         <div class="text-center mb-3">
             <div class="col">
-                <a href="{{ url_for('settings.counties') }}" class="btn btn-secondary"><i class="bi bi-x-lg"></i>&nbsp; Cancel</a> &nbsp;
+                <a href="{{ url_for('poll.agendas') }}" class="btn btn-secondary"><i class="bi bi-x-lg"></i>&nbsp; Cancel</a> &nbsp;
                 <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i>&nbsp; Delete</button>
             </div>
         </div>

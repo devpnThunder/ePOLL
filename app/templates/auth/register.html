@@ -1,0 +1,103 @@
+{% extends "shared/loginlayout.html" %}
+{% block title %} {{ title }} {% endblock %}
+{% block content %}
+<div class="container text-center">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="row justify-content-center align-content-center">
+        <div class="alert toast alert-{{ category }} alert-dismissible fade show text-center is-danger border-start border-0 border-4 border-{{category}}"
+            role="alert">
+            <strong class="text-{{category}}">{{ message }}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <div class="row justify-content-center align-content-center">
+        <div class="col-md"></div>
+
+        <div class="col-md-6">
+            <div class="card shadow rounded-0">
+                <div class="card-body">
+                    <img src="{{url_for('static', filename='images/logo.png')}}" class="img-fluid" alt="logo">
+                    <h5 class="card-title m-3">LOG-IN</h5>
+                    <hr>
+                    <section class="loginform" name="loginform">
+                        <form id="account" method="post">
+                            {{ form.hidden_tag() }}
+                            <div class="form-floating mb-3">
+                                {{ form.constituency_id }}
+                                {{ form.constituency_id.label }}
+                            </div>
+                            <div class="form-floating mb-4">
+                                {{ form.surname}}
+                                {{ form.surname.label }}
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-floating mb-3">
+                                        {{ form.firstname }}
+                                        {{ form.firstname.label }}
+                                    </div>
+                                </div>
+
+                                <div class="col">
+                                    <div class="form-floating mb-3">
+                                        {{ form.othername }}
+                                        {{ form.othername.label }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="form-floating mb-3">
+                                        {{ form.gender }}
+                                        {{ form.gender.label }}
+                                    </div>
+                                </div>
+
+                                <div class="col">
+                                    <div class="form-floating mb-3">
+                                        {{ form.id_number }}
+                                        {{ form.id_number.label }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-floating mb-3">
+                                {{ form.email }}
+                                {{ form.email.label }}
+                            </div>
+                            <div class="form-floating mb-3">
+                                {{ form.password }}
+                                {{ form.password.label }}
+                            </div>
+                            <div class="form-floating mb-3">
+                                {{ form.roles }}
+                                {{ form.roles.label }}
+                            </div>
+                            <div class="form-group">
+                                <input type="hidden" name="next" value="/" />
+                                <button type="submit" class="btn btn-success rounded-0 shadow"><i class="bi bi-box-arrow-in-right"></i>&nbsp; Register</button>
+                            </div>
+                            <hr>
+                            <p class="text-center text-muted">
+                                <small>
+                                    Copyright &copy; 2024
+                                </small>
+                            </p>
+                        </form>
+                    </section>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md"></div>
+    </div>
+    
+</div>
+
+{% endblock%}

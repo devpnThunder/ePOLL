@@ -20,7 +20,7 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex align-content-center justify-content-evenly">
-                    <ul class="navbar-nav flex-grow-1">
+                    <!-- <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
                             <a class="nav-link active text-white" href="">About</a>
                         </li>
@@ -30,7 +30,21 @@
                         <li class="nav-item">
                             <a class="nav-link link" href="">Contact</a>
                         </li>
-                    </ul>
+                    </ul> -->
+                    <ul class="navbar-nav flex-grow-1 align-content-center">
+                        {% if current_user.is_authenticated %}
+                        <li class="nav-item pe-3">
+                          <a class="btn btn-dark" href="#" data-bs-toggle="tooltip" data-bs-title="View Notifications"><i class="bi bi-bell"></i>&nbsp; <span class="badge text-bg-light">4</span></a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="btn btn-dark" href="{{ url_for ('auth.logout') }}" data-bs-toggle="tooltip" data-bs-title="logout"><i class="bi bi-power"></i></a>
+                        </li>
+                        {% else %}
+                        <li class="nav-item">
+                          <a class="btn btn-dark" href="{{ url_for ('auth.login') }}" data-bs-toggle="tooltip" data-bs-title="login"><i class="bi bi-box-arrow-in-right"></i>&nbsp; Log-In</a>
+                        </li>
+                        {% endif %}
+                      </ul>
                 </div>
             </div>
         </nav>

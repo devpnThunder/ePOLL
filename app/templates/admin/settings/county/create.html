@@ -12,6 +12,10 @@
     <form method="POST">
         {{ form.hidden_tag() }}
         <div class="form-floating mb-3">
+            {{ form.code }}
+            {{ form.code.label }}
+        </div>
+        <div class="form-floating mb-3">
             {{ form.name }}
             {{ form.name.label }}
         </div>

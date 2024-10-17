@@ -1,0 +1,217 @@
+{% extends "shared/adminlayout.html" %}
+{% block title %} {{ title }} {% endblock %}
+{% block content %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="position-fixed top-1 end-0 p-3" style="z-index: 1050;">
+    <div class="alert alert-{{ category }} alert-dismissible fade show text-center border-start border-0 border-5 border-{{category}} rounded-0" role="alert">
+        <strong>{{ message }}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+<div class="container mt-3">
+    <h3 class="display-5"><i class="bi bi-people"></i>&nbsp;{{ title }}</h3>
+    <hr>
+
+    <!-- <div class="text-center">
+        <form class="mb-3" method="GET" action="{{url_for('admin.voters')}}">
+            <div class="row row-cols-md-1 row-cols-md-2 align-content-center justify-content-center">
+                <div class="col align-content-center justify-content-center">
+                    <div class="form-floating mb-3">
+                        <input class="form-control border border-info text-center" type="text" name="search" placeholder="Search..." value="{{ search }}">
+                        <label id="search" for="search">Name|ID|Email|Constituency</label>
+                    </div>
+                </div>
+    
+                <div class="col align-content-center justify-content-center">
+                    <button id="search" type="submit" class="btn btn-success mb-3"><i class="bi bi-search"></i>&nbsp; Search</button> &nbsp;
+                    <a type="button" class="btn btn-secondary mb-3" href="{{ url_for('admin.voters') }}"><i class="bi bi-arrow-clockwise"></i> &nbsp; Refresh</a>
+                </div>
+            </div>
+        </form>
+    </div> -->
+
+    <div class="text-center align-content-center justify-content-center">
+        <form class="mb-3" method="GET" action="{{url_for('admin.voters')}}">
+            <div class="row">
+                <div class="col">
+                    <div class="form-floating mb-3">
+                        <input class="form-control border border-info text-center" type="text" name="search" placeholder="Search..." value="{{ search }}">
+                        <label id="search" for="search">Name|ID|Email|Constituency</label>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <button id="search" type="submit" class="btn btn-success mb-3"><i class="bi bi-search"></i>&nbsp; Search</button> &nbsp;
+                    <a type="button" class="btn btn-secondary mb-3" href="{{ url_for('admin.voters') }}"><i class="bi bi-arrow-clockwise"></i> &nbsp; Refresh</a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="row align-content-center mb-3">
+        <div class="col text-start">
+            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary"><i class="bi bi-arrow-left-circle-fill"></i>&nbsp; Back to Settings</a>&nbsp;
+        </div>
+
+        <div class="col text-end align-content-center">
+            <h5>Total Voters:&nbsp;<strong class="fst-italic">{{count_voters}}</strong></h4>
+        </div>
+    </div>
+
+    <h4>List of {{title}}</h4>
+    <div class="row align-content-center">
+        <div class="col">
+            <div class="text-start" id="itemsperpage">
+                <!-- Page Size Dropdown -->
+                <form method="get" action="">
+                    <label for="page_size">Items per page:</label>
+                    <select id="page_size" name="page_size" onchange="this.form.submit()">
+                        <option value="20" {% if page_size == 20 %}selected{% endif %}>20</option>
+                        <option value="30" {% if page_size == 30 %}selected{% endif %}>30</option>
+                        <option value="50" {% if page_size == 50 %}selected{% endif %}>50</option>
+                    </select>
+                    <input type="hidden" name="page" value="1">
+                    <!-- Retain sort_by and sort_order parameters -->
+                    <input type="hidden" name="sort_by" value="{{ sort_by }}">
+                    <input type="hidden" name="sort_order" value="{{ sort_order }}">
+                </form>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="text-end" id="pagination_section">
+                {% if votersList.has_prev %}
+                <a class="btn btn-sm btn-secondary rounded-0" href="{{ url_for('admin.voters', page=votersList.prev_num, sort_by=sort_by, sort_order=sort_order, page_size=page_size) }}">
+                <i class="bi bi-arrow-left-circle-fill"></i>&nbsp; Previous
+                </a>
+                {% endif %}
+            
+                {% for number in votersList.iter_pages() %}
+                {% if votersList.page != number %}
+                    <a class="page-number btn btn-sm btn-secondary rounded-0" href="{{ url_for('admin.voters', page=number) }}"> 
+                        {{ number }}
+                    </a>
+                {% else %}
+                    <span class='current-page-number'>{{ number }}</span>
+                {% endif %}
+                {% endfor %}
+            
+                {% if votersList.has_next %}
+                <a class="btn btn-sm btn-secondary rounded-0" href="{{ url_for('admin.voters', page=votersList.next_num, sort_by=sort_by, sort_order=sort_order, page_size=page_size) }}">Next &nbsp;
+                <i class="bi bi-arrow-right-circle-fill"></i>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <hr>
+
+    <div class="table-responsive text-center">
+        <table class="table table-hover align-content-center">
+            <thead>
+                <tr class="align-middle">
+                    <th class="text-start" scope="col">Constituency &nbsp;<a href="{{ url_for('admin.voters', sort_by='constituency_id', sort_order='desc' if sort_order == 'asc' else 'asc') }}"><i class="bi {{'bi-sort-down-alt' if sort_order == 'asc' else 'bi-sort-up-alt'}}"></i></a></th>
+                    <th class="text-start" scope="col">Fullname</th>
+                    <th class="text-start" scope="col">Gender &nbsp;<a href="{{ url_for('admin.voters', sort_by='gender', sort_order='desc' if sort_order == 'asc' else 'asc') }}"><i class="bi {{'bi-sort-down-alt' if sort_order == 'asc' else 'bi-sort-up-alt'}}"></i></a></th>
+                    <th class="text-start" scope="col">ID No.</th>
+                    <th class="text-start" scope="col">Date Reg</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody class="table-group-divider align-content-center">
+                {% for voter in votersList %}
+                    <tr class="clickable-row align-middle" data-href="">
+                        <th class="text-start" scope="row">{{voter.constituency.name}}</th>
+                        <th class="text-start">{{voter.fullname}}</th>
+                        <th class="text-start">{{voter.gender.value}}</th>
+                        <th class="text-start">{{voter.id_number }}</th>
+                        <td class="text-start">{{voter.date_registered }}</td>
+                        <td>
+                            {% for role in current_user.roles %}
+                                {% if role.name == 'Admin', 'Manager' %}
+                                <a href="" class="btn btn-sm btn-success rounded-0"><i class="bi bi-plus-lg"></i>&nbsp;Savings</a> |
+                                {% endif %}
+                                {% if role.name == 'Admin', 'Manager' %}
+                                <a href="" class="btn btn-sm btn-warning rounded-0"><i class="bi bi-plus-lg"></i>&nbsp;Loan</a>
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="row align-content-center">
+        <div class="col">
+            <div class="text-start" id="itemsperpage">
+                <!-- Page Size Dropdown -->
+                <form method="get" action="">
+                    <label for="page_size">Items per page:</label>
+                    <select id="page_size" name="page_size" onchange="this.form.submit()">
+                        <option value="20" {% if page_size == 20 %}selected{% endif %}>20</option>
+                        <option value="30" {% if page_size == 30 %}selected{% endif %}>30</option>
+                        <option value="50" {% if page_size == 50 %}selected{% endif %}>50</option>
+                    </select>
+                    <input type="hidden" name="page" value="1">
+                    <!-- Retain sort_by and sort_order parameters -->
+                    <input type="hidden" name="sort_by" value="{{ sort_by }}">
+                    <input type="hidden" name="sort_order" value="{{ sort_order }}">
+                </form>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="text-end" id="pagination_section">
+                {% if votersList.has_prev %}
+                <a class="btn btn-sm btn-secondary rounded-0" href="{{ url_for('admin.voters', page=votersList.prev_num, sort_by=sort_by, sort_order=sort_order, page_size=page_size) }}">
+                <i class="bi bi-arrow-left-circle-fill"></i>&nbsp; Previous
+                </a>
+                {% endif %}
+            
+                {% for votersList in votersList.iter_pages() %}
+                {% if votersList.page != number %}
+                    <a class="page-number btn btn-sm btn-secondary rounded-0" href="{{ url_for('admin.voters', page=number) }}"> 
+                        {{ number }}
+                    </a>
+                {% else %}
+                    <span class='current-page-number'>{{ number }}</span>
+                {% endif %}
+                {% endfor %}
+            
+                {% if votersList.has_next %}
+                <a class="btn btn-sm btn-secondary rounded-0" href="{{ url_for('admin.voters', page=votersList.next_num, sort_by=sort_by, sort_order=sort_order, page_size=page_size) }}">Next &nbsp;
+                <i class="bi bi-arrow-right-circle-fill"></i>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    const rows = document.querySelectorAll('.clickable-row');
+    rows.forEach(row => {
+        row.addEventListener('click', function(event) {
+            const isButton = event.target.closest('a, button');
+            if (!isButton) {
+                window.location.href = this.dataset.href;
+            }
+        });
+    });
+});
+</script>
+
+{% endblock %}

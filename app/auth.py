@@ -8,6 +8,7 @@ from werkzeug.security import check_password_hash
 from .extensions import login_manager
 from datetime import datetime
 from functools import wraps
+from sqlalchemy import or_
 
 # login_manager = LoginManager()
 auth = Blueprint('auth', __name__, url_prefix='/auth')
@@ -17,64 +18,65 @@ auth = Blueprint('auth', __name__, url_prefix='/auth')
 # Authorization routes section starts Here
 # Contains all Authorization routes and any associated routes
 #=================================================================#
-
-#
-# This is the Register Route. It returns the register page
-# 
-@auth.route('/register/', methods=('GET', 'POST'))
+@auth.route('/register/', methods=['GET', 'POST'])
+# @login_required
+# @role_required('Super', 'Admin')
 def register():
     """
-    Register View
+    New Voter Registration
     """
-    form = RegisterVoterForm()
-    form.roles.choices = [(r.id, r.name) for r in Role.query.filter(Role.name != 'Super').all()]
-    
+    form = RegistrationForm()
+    form.constituency_id.choices = [(c.id, c.name) for c in Constituency.query.all()]
+    form.roles.choices = [(r.id, r.name) for r in Role.query.filter(Role.name == 'Voter').all()]
+
     if form.validate_on_submit():
+        constituency_id = form.constituency_id.data
+        surname = form.surname.data
         firstname = form.firstname.data
-        lastname = form.lastname.data
+        othername = form.othername.data
+        fullname = (firstname + ' ' + othername + ' ' + surname )
+        gender = form.gender.data
+        id_number = form.id_number.data
         email = form.email.data
         password = form.password.data
         roles = form.roles.data
 
         error = None
 
-        # if not firstname:
-        #     error = "Firstname is required!"
-        # elif not lastname:
-        #     error = "Lastname is required!"
-        # elif not email:
-        #     error = "Email is required!"
-        # elif not password:
-        #     error = "Password is required!"
-
-        validate_username = User.query.filter_by(username=(firstname+lastname)).first()
-        validate_email = User.query.filter_by(email=email).first()
-
-        if validate_username:
-            error = f"Username {(firstname+lastname)} is taken. Please use a different username."
-        elif validate_email:
-            error = f"Email {email} is taken. Please use a different email address."
+        test = Voter.query.filter(or_(Voter.email == email, Voter.id_number == id_number)).first()
 
         if error:
             flash(error)
         else:
-            try:
-                user = User(username=(firstname+lastname), email=email, role=roles, 
-                            date_registered=datetime.now(), updated_at=datetime.now())
-                user.set_password(password)
-                db.session.add(user)
-                db.session.commit()
+            if test:
+                flash(f'{email} already exists!', 'warning')
+                return redirect(url_for('auth.register'))
+            else:
+                try:
+                    newuser = User(email=email, created_at=datetime.now())
+                    newuser.set_password(password)
+                    db.session.add(newuser)
+                    db.session.commit()
 
+                    userrole = UserRole(user_id=newuser.id, role_id=roles)
+                    db.session.add(userrole)
+                    db.session.commit()
 
-                flash(f"User {firstname+lastname} is added Successfully!", "success")
-                return redirect(url_for('admin.settings'))
-            except Exception as e:
-                flash(f"There was an error saving data: {e}!", "danger")
-                db.session.rollback
-                return redirect(url_for('admin.settings'))
-        flash(error)
+                    newvoter = Voter(user_id=newuser.id, constituency_id=constituency_id, 
+                                    surname=surname, firstname=firstname, othername=othername,
+                                    fullname=fullname, gender=gender, id_number=id_number,
+                                    email=email, date_registered=datetime.now())
+                    db.session.add(newvoter)
+                    db.session.commit()
 
-    return render_template('auth/register.html', title='Register', form=form, ACCOUNT=True)
+                    flash(f'Account for {(firstname + ' ' + surname)}  is created successfully!', 'success')
+                    return redirect(url_for('auth.login'))
+                except Exception as e:
+                    flash(f'There was an error saving data: {e}!', 'danger')
+                    db.session.rollback
+                    return redirect(url_for('auth.register'))
+            
+    return render_template('auth/register.html', title='New Voter Registration', form=form)
 
 
 # @login_manager.user_loader

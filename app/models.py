@@ -181,6 +181,7 @@ class County(db.Model):
     """
     __tablename__ = "counties"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    code = db.Column(db.Integer, nullable=False, unique=True)
     name = db.Column(db.String(100), nullable=False, unique=True)
     created_at = db.Column(db.DateTime, nullable=False)
     update_at = db.Column(db.DateTime(timezone=True), onupdate=db.func.now())
@@ -230,7 +231,8 @@ class Voter(db.Model):
     date_registered = db.Column(db.DateTime, nullable=False)
     updated_at = db.Column(db.DateTime(timezone=True), onupdate=db.func.now())
     # Relationships
-    motionpolls = db.relationship('MotionPoll', backref='voter', lazy=True)
+    motionvotes = db.relationship('MotionVote', backref='voter', lazy=True)
+    agendavote = db.relationship('AgendaVote', backref='voter', lazy=True)
 
 
 class Category(db.Model):
@@ -278,8 +280,8 @@ class Motion(db.Model):
     created_at = db.Column(db.DateTime, nullable=False)
     updated_at = db.Column(db.DateTime(timezone=True), onupdate=db.func.now())
     # Relationships
-    motionpolls = db.relationship('MotionPoll', backref='motion', lazy=True)
-    violations = db.relationship('Violation', backref='motion', lazy=True)
+    motionvotes = db.relationship('MotionVote', backref='motion', lazy=True)
+    agendas = db.relationship('Agenda', backref='motion', lazy=True)
 
 
 class SupportOptions(Enum):
@@ -291,44 +293,44 @@ class SupportOptions(Enum):
     OTHERS = 'Others'
 
 
-class MotionPoll(db.Model):
+class MotionVote(db.Model):
     """
-    Motion Poll Model defination
+    Motion Vote Model defination
     """
-    __tablename__ = "MotionPoll"
+    __tablename__ = "MotionVote"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    voter_id = db.Column(db.String(36), db.ForeignKey('voters.id', name='fk_voter_id'), nullable=False)
     motion_id = db.Column(db.Integer, db.ForeignKey('motion.id', name='fk_motion_id'), nullable=False)
-    voter_id = db.Column(db.Integer, db.ForeignKey('voters.id', name='fk_voter_id'), nullable=False)
     vote = db.Column(db.Enum(SupportOptions), nullable=False)
-    other_text = db.Column(db.Text)
+    other_text = db.Column(db.String(100), nullable=True)
     voted_at = db.Column(db.DateTime, nullable=False)
     updated_at = db.Column(db.DateTime(timezone=True), onupdate=db.func.now())
 
 
 
-class Violation(db.Model):
+class Agenda(db.Model):
     """
-    Violation Model defination
+    Agenda Model defination
     """
-    __tablename__ = "violation"
+    __tablename__ = "agenda"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     motion_id = db.Column(db.Integer, db.ForeignKey('motion.id', name='fk_motion_id'), nullable=False)
-    text = db.Column(db.String(200), nullable=False)
+    text = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False)
     updated_at = db.Column(db.DateTime(timezone=True), onupdate=db.func.now())
     # Relationships
-    violationpolls = db.relationship('ViolationPoll', backref='violation', lazy=True)
+    agendavotes = db.relationship('AgendaVote', backref='agenda', lazy=True)
 
 
 
-class ViolationPoll(db.Model):
+class AgendaVote(db.Model):
     """
-    Violation Poll Model defination
+    Agenda Vote Model defination
     """
-    __tablename__ = "violation_poll"
+    __tablename__ = "agenda_vote"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    violation_id = db.Column(db.Integer, db.ForeignKey('violation.id', name='fk_violation_id'), nullable=False)
+    voter_id = db.Column(db.String(36), db.ForeignKey('voters.id', name='fk_voter_id'), nullable=False)
+    agenda_id = db.Column(db.Integer, db.ForeignKey('agenda.id', name='fk_agenda_id'), nullable=False)
     vote = db.Column(db.Boolean, nullable=False, default=True)
-    date_voted = db.Column(db.DateTime, nullable=False)
     voted_at = db.Column(db.DateTime, nullable=False)
     updated_at = db.Column(db.DateTime(timezone=True), onupdate=db.func.now())

@@ -336,6 +336,7 @@ def new_county():
     form = CountyForm()
 
     if form.validate_on_submit():
+        code = form.code.data
         name = form.name.data
 
         error = None
@@ -344,7 +345,7 @@ def new_county():
             flash(error)
         else:
             try:
-                newcounty = County(name=name, created_at=datetime.now())
+                newcounty = County(code=code, name=name, created_at=datetime.now())
                 db.session.add(newcounty)
                 db.session.commit()
 
@@ -369,6 +370,7 @@ def edit_county(id):
     form = CountyForm(obj=selected_county)
 
     if form.validate_on_submit():
+        selected_county.code = form.code.data
         selected_county.name = form.name.data
         
         error = None

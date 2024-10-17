@@ -21,12 +21,12 @@
 
     <div class="row align-content-center mb-3">
         <div class="col text-start">
-            <a href="{{ url_for('settings.index') }}" class="btn btn-secondary"><i class="bi bi-arrow-left-circle-fill"></i>&nbsp; Back to Settings</a>&nbsp;
-            <a href="{{ url_for('settings.new_county') }}" class="btn btn-success"><i class="bi bi-plus-lg"></i>&nbsp; New County</a>
+            <a href="{{ url_for('poll.index') }}" class="btn btn-secondary"><i class="bi bi-arrow-left-circle-fill"></i>&nbsp; Back to Polls</a>&nbsp;
+            <a href="{{ url_for('poll.new_agenda') }}" class="btn btn-success"><i class="bi bi-plus-lg"></i>&nbsp; New Agenda</a>
         </div>
 
         <div class="col text-end align-content-center">
-            <h5>Counties:&nbsp;<strong class="fst-italic"></strong></h4>
+            <h5>Agendas:&nbsp;<strong class="fst-italic">{{count_motion}}</strong></h4>
         </div>
     </div>
     <h4>List of {{title}}</h4>
@@ -34,21 +34,22 @@
         <table class="table table-hover align-content-center">
             <thead>
                 <tr class="align-middle">
-                    <th scope="col">Code</th>
-                    <th scope="col">Name</th>
+                    <th scope="col">Motion</th>
+                    <th scope="col">Text</th>
                     <th scope="col">Date Created</th>
                     <th scope="col"></th>
                 </tr>
             </thead>
             <tbody class="table-group-divider align-content-center">
-                {% for county in all_counties %}
+                {% for agenda in agendalist %}
                     <tr class="clickable-row align-middle" data-href="#">
-                        <th scope="row">{{county.code}}</th>
-                        <th scope="row">{{county.name}}</th>
-                        <th scope="row">{{county.created_at}}</th>
+                        <th scope="row">{{agenda.motion.name}}</th>
+                        <th scope="row">{{agenda.text}}</th>
+                        <th scope="row">{{agenda.created_at}}</th>
                         <td scope="row">
-                            <a href="{{ url_for('settings.edit_county', id=county.id) }}"><i class="bi bi-pencil-square text-primary"></i></a> &nbsp;
-                            <a href="{{ url_for('settings.delete_county', id=county.id) }}"><i class="bi bi-trash text-danger"></i></a>
+                            <a href="{{ url_for('poll.edit_agenda', id=agenda.id) }}"><i class="bi bi-pencil-square text-primary"></i></a> &nbsp;
+                            <a href="{{ url_for('poll.delete_agenda', id=agenda.id) }}"><i class="bi bi-trash text-danger"></i></a> &nbsp;
+                            <a href="{{ url_for('poll.new_agendavote', id=agenda.id) }}"><i class="bi bi-person-check-fill text-success"></i></a>
                             {% for role in current_user.roles %}
                                 {% if role.name == 'Admin', 'Manager' %}
                                 <a href="{{ url_for('admin.newsaving', id=member.id) }}" class="btn btn-sm btn-success rounded-0"><i class="bi bi-plus-lg text-danger"></i>&nbsp;Savings</a> |

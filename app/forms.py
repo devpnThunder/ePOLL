@@ -1,5 +1,5 @@
 """Forms defination file."""
-from app.models import Gender
+from app.models import Gender, SupportOptions
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, FloatField, SelectField, TextAreaField, DateField, BooleanField, FileField, SelectMultipleField
 from wtforms.widgets import ListWidget, CheckboxInput
@@ -37,11 +37,11 @@ class RoleForm(FlaskForm):
 #========================================================================================#
 # New Voter Registration Form
 #========================================================================================#
-class NewVoterForm(FlaskForm):
+class RegistrationForm(FlaskForm):
     """
     New Voter Registration form defination
     """
-    constituency_id_id = SelectField("Constituency", coerce=str, validators=[DataRequired()],
+    constituency_id = SelectField("Constituency", coerce=str, validators=[DataRequired()],
                         render_kw={"placeholder":"Constituency", "class":"form-control form-select", "required":"required"})
     surname = StringField("Surname", validators=[DataRequired(), Length(max=20)],
                        render_kw={"placeholder": "Surname", "type":"text", "class": "form-control", "required":"required"})
@@ -51,6 +51,8 @@ class NewVoterForm(FlaskForm):
                        render_kw={"placeholder": "Second Name", "type":"text", "class": "form-control"})
     gender = SelectField("Gender", choices=[(gender.name, gender.value) for gender in Gender],
                         render_kw={"placeholder":"Gender", "class":"form-control form-select", "required":"required"})
+    id_number = StringField("ID Number", validators=[DataRequired(), Length(max=20)],
+                       render_kw={"placeholder":"ID Number", "class":"form-control", "required":"required"})
     email = StringField("Email Address", validators=[DataRequired(), Length(max=50)],
                        render_kw={"placeholder":"Email", "type":"email", "class":"form-control", "required":"required"})
     password = StringField("Password", validators=[DataRequired()],
@@ -137,6 +139,8 @@ class CountyForm(FlaskForm):
     """
     County form defination
     """
+    code = IntegerField("Code", validators=[DataRequired()], 
+                        render_kw={"placeholder":"Code", "class":"form-control", "required":"required"})
     name = StringField("Group Name", validators=[DataRequired(), Length(max=100)],
                        render_kw={"placeholder":"Group Name", "class":"form-control", "required":"required"})
 #========================================================================================#
@@ -177,31 +181,50 @@ class CategoryForm(FlaskForm):
 
 
 #========================================================================================#
-# Question Form
+# Motion Form
 #========================================================================================#
-class QuestionForm(FlaskForm):
+class MotionForm(FlaskForm):
     """
-    Question form defination
+    Motion form defination
     """
+    category_id = SelectField("Category", coerce=str, validators=[DataRequired()],
+                        render_kw={"placeholder":"Category", "class":"form-control form-select", "required":"required"})
+    name = StringField("Motion Name", validators=[DataRequired(), Length(max=100)],
+                       render_kw={"placeholder":"Motion Name", "class":"form-control", "required":"required"})
     text = StringField("Question", validators=[DataRequired(), Length(max=500)],
                        render_kw={"placeholder":"Question", "class":"form-control", "required":"required"})
-    country_id = SelectField("County", coerce=str, validators=[DataRequired()],
-                        render_kw={"placeholder":"County", "class":"form-control form-select", "required":"required"})
 #========================================================================================#
 
 
 
 #========================================================================================#
-# Option Form
+# Motion Poll Form
 #========================================================================================#
-class OptionForm(FlaskForm):
+class MotionVoteForm(FlaskForm):
     """
-    Option form defination
+    Motion Poll form defination
     """
-    question_id = SelectField("Question", coerce=str, validators=[DataRequired()],
-                        render_kw={"placeholder":"Quetion", "class":"form-control form-select", "required":"required"})
-    text = StringField("Question", validators=[DataRequired(), Length(max=500)],
-                       render_kw={"placeholder":"Question", "class":"form-control", "required":"required"})
+    motion_id = SelectField("Motion", coerce=str, validators=[DataRequired()],
+                        render_kw={"placeholder":"Motion", "class":"form-control form-select", "required":"required"})
+    vote = SelectField("Vote", choices=[(vote.name, vote.value) for vote in SupportOptions],
+                        render_kw={"placeholder": "Vote", "class": "form-control form-select", "required":"required"})
+    other_text = StringField("Other Option Text", validators=[Length(max=100)],
+                            render_kw={"placeholder":"Other Option Text", "type":"text", "class":"form-control"})
+#========================================================================================#
+
+
+
+#========================================================================================#
+# Agenda Form
+#========================================================================================#
+class AgendaForm(FlaskForm):
+    """
+    Agenda form defination
+    """
+    motion_id = SelectField("Motion", coerce=str, validators=[DataRequired()],
+                        render_kw={"placeholder":"Motion", "class":"form-control form-select", "required":"required"})
+    text = TextAreaField("Agenda Description", validators=[DataRequired()],
+                       render_kw={"placeholder":"Agenda Description", "class":"form-control", "style":"height:200px;", "required":"required"})
 #========================================================================================#
 
 
@@ -209,14 +232,13 @@ class OptionForm(FlaskForm):
 #========================================================================================#
 # Result Form
 #========================================================================================#
-class ResultForm(FlaskForm):
+class AgendaVoteForm(FlaskForm):
     """
-    Result form defination
+    Agenda Vote form defination
     """
-    option_id = SelectField("Option", coerce=str, validators=[DataRequired()],
-                        render_kw={"placeholder":"Option", "class":"form-control form-select", "required":"required"})
-    score = IntegerField("Score", validators=[DataRequired()],
-                       render_kw={"placeholder":"Score", "type":"number", "class":"form-control", "required":"required"})
+    agenda_id = SelectField("Agenda", coerce=str, validators=[DataRequired()],
+                        render_kw={"placeholder":"Agenda", "class":"form-control form-select", "required":"required"})
+    vote = BooleanField("Agree?", render_kw={"placeholder":"Agree?", "type":"checkbox", "class":"form-check-input"})
 #========================================================================================#
 
 #----------------------------------------------------------------------------------------#
