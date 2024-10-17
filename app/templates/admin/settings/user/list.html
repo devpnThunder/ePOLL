@@ -1,0 +1,106 @@
+{% extends "shared/adminlayout.html" %}
+{% block title %} {{title}} {% endblock %}
+{% block content %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="position-fixed top-1 end-0 p-3" style="z-index: 1050;">
+    <div class="alert alert-{{ category }} alert-dismissible fade show text-center border-start border-0 border-5 border-{{category}} rounded-0" role="alert">
+        <strong>{{ message }}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+<div class="container">
+    <h3 class="display-5"><i class="bi bi-people"></i>&nbsp;{{title}}</h3>
+    <hr>
+
+    <div class="row align-content-center mb-3">
+        <div class="col text-start">
+            <a href="{{ url_for('settings.index') }}" class="btn btn-secondary"><i class="bi bi-arrow-left-circle-fill"></i>&nbsp; Back to Settings</a>&nbsp;
+            <a href="{{ url_for('settings.new_user') }}" class="btn btn-success"><i class="bi bi-plus-lg"></i>&nbsp; New User</a>
+        </div>
+
+        <div class="col text-end align-content-center">
+            <h5>Users:&nbsp;<strong class="fst-italic"></strong></h4>
+        </div>
+    </div>
+    <h4>List of {{title}}</h4>
+    <div class="table-responsive">
+        <table class="table table-hover align-content-center">
+            <thead>
+                <tr class="align-middle">
+                    <th scope="col">Email</th>
+                    <th scope="col">Role</th>
+                    <th scope="col">Date Created</th>
+                    <th scope="col">Status</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody class="table-group-divider align-content-center">
+                {% for user in system_users.items %}
+                    <tr class="clickable-row align-middle" data-href="#">
+                        <th scope="row">{{user.email}}</th>
+                        <th scope="row">
+                            {% if user.roles %}
+                                {% for role in user.roles %}
+                                    {{ role.name }}
+                                {% endfor %}
+                            {% else %}
+                                <span>No roles assigned</span>
+                            {% endif %}
+                            </th>
+                        <th scope="row">{{user.created_at}}</th>
+                        <td scope="row">
+                            <strong>
+                                {% if user.status.value == 'Active' %}
+                                <span class="text-success">{{user.status.value}}</span>
+                                {% elif user.status.value == 'Pending' %}
+                                <span class="text-primary">{{user.status.value}}</span>
+                                {% elif user.status.value == 'Inactive' %}
+                                <span class="text-secondary">{{user.status.value}}</span>
+                                {% elif user.status.value == 'Suspended' %}
+                                <span class="text-warning">{{user.status.value}}</span>
+                                {% elif user.status.value == 'Banned' %}
+                                <span class="text-danger">{{user.status.value}}</span>
+                                {% endif %}
+                            </strong>
+                        </td>
+                        <td scope="row">
+                            <a href="{{ url_for('settings.edit_user', id=user.id) }}"><i class="bi bi-pencil-square text-primary"></i></a> &nbsp;
+                            <a href="{{ url_for('settings.delete_user', id=user.id) }}"><i class="bi bi-trash text-danger"></i></a> &nbsp;
+                            {% for role in current_user.roles %}
+                                {% if role.name == 'Admin', 'Manager' %}
+                                <a href="{{ url_for('admin.newsaving', id=member.id) }}" class="btn btn-sm btn-success rounded-0"><i class="bi bi-plus-lg"></i>&nbsp;Savings</a> |
+                                {% endif %}
+                                {% if role.name == 'Admin', 'Manager' %}
+                                <a href="{{ url_for('admin.newloan', id=member.id) }}" class="btn btn-sm btn-warning rounded-0"><i class="bi bi-plus-lg"></i>&nbsp;Loan</a>
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    const rows = document.querySelectorAll('.clickable-row');
+    rows.forEach(row => {
+        row.addEventListener('click', function(event) {
+            const isButton = event.target.closest('a, button');
+            if (!isButton) {
+                window.location.href = this.dataset.href;
+            }
+        });
+    });
+});
+</script>
+
+{% endblock %}

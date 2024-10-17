@@ -1,0 +1,28 @@
+{% extends "shared/adminlayout.html" %}
+{% block title %} {{title}} {% endblock %}
+{% block content %}
+
+<div class="container mt-3">
+    
+    <div class="text-center">
+        <i class="bi bi-clipboard-data display-1"></i>
+        <h4><strong>{{title}} Form</strong></h4>
+    </div>
+    <hr>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="form-floating mb-3">
+            {{ form.name }}
+            {{ form.name.label }}
+        </div>
+        <hr>
+        <div class="text-center mb-3">
+            <div class="col">
+                <a href="{{ url_for('settings.categories') }}" class="btn btn-secondary"><i class="bi bi-x-lg"></i>&nbsp; Cancel</a> &nbsp;
+                <button type="submit" class="btn btn-success"><i class="bi bi-floppy"></i>&nbsp; Update</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

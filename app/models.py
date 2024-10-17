@@ -1,11 +1,14 @@
 """
 Models configuration file that contains all Models and ENUMs
 """
-import uuid
+from uuid import uuid4
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import RoleMixin, UserMixin, AsaList
+from flask_login import UserMixin
+# from flask_security import RoleMixin, AsaList
 from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy.ext.mutable import MutableList
+from sqlalchemy.dialects.postgresql import ARRAY
+from flask_security import RoleMixin
 from enum import Enum
 from datetime import datetime
 from .extensions import db
@@ -24,7 +27,18 @@ def generate_uuid():
     """
     A function to generate UUIDs
     """
-    return str(uuid.uuid4())
+    return str(uuid4())
+
+
+class Permission(Enum):
+    """
+    Role Permissions defination
+    """
+    CREATE = 'Create'
+    READ = 'Read'
+    UPDATE = 'Update'
+    DELETE = 'Delete'
+    ADMIN = 'Admin'
 
 
 # 
@@ -33,10 +47,21 @@ def generate_uuid():
 #
 class Gender(Enum):
     """
-    Gender Enum Defination
+    Gender Enum defination
     """
     MALE = "Male"
     FEMALE = "Female"
+
+
+class Permission(db.Model):
+    """
+    Permission Model defination
+    """
+    __tablename__ = "permissions"
+    id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
+    name = db.Column(db.String(20), nullable=False, unique=True)
+    # Relationships
+    roles = db.relationship('Role', secondary='role_permissions', back_populates='permissions')
 
 
 
@@ -46,37 +71,81 @@ class Gender(Enum):
 #
 class Role(RoleMixin, db.Model):
     """
-    Role Model Defination
+    Role Model defination
     """
     __tablename__ = "roles"
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
     name = db.Column(db.String(20), nullable=False, unique=True)
-    description = db.Column(db.String(255))
-    permissions = db.Column(MutableList.as_mutable(AsaList()), nullable=True)
-    created_at = db.Column(db.DateTime(timezone=True))
+    description = db.Column(db.String(120))
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.now())
+    updated_at = db.Column(db.DateTime(timezone=True), onupdate=db.func.now())
     # Relationships
+    permissions = db.relationship('Permission', secondary='role_permissions', back_populates='roles')
     users = db.relationship('User', secondary='user_roles', back_populates='roles')
 
+    # Initialization of roles 
+    def __init__(self, name, description=None, permissions=None):
+        self.name = name
+        self.description = description
+        self.permissions = permissions or []
+    
+    # Add role permission method
+    def add_permission(self, permission):
+        if permission not in self.permissions:
+            self.permissions.append(permission)
+
+    # Remove role permission method
+    def remove_permission(self, permission):
+        if permission in self.permissions:
+            self.permissions.remove(permission)
+
+    # Reset role permission method
+    def reset_permissions(self):
+        self.permissions = []
+
+    # Checks for role permission
+    def has_permission(self, permission):
+        return permission in self.permissions
 
 
+class RolePermission(db.Model):
+    """
+    Role Permissions Model defination
+    """
+    __tablename__ = "role_permissions"
+    id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
+    role_id = db.Column(db.String(36), db.ForeignKey('roles.id', name='fk_role_id', ondelete='CASCADE'))
+    permission_id = db.Column(db.String(36), db.ForeignKey('permissions.id', name='fk_permission_id', ondelete='CASCADE'))
+
+
+class UserStatus(Enum):
+    """
+    User Status Enum defination
+    """
+    ACTIVE = 'Active'       # User is active and has access to the system
+    INACTIVE = 'Inactive'   # User is inactive and cannot access the system
+    SUSPENDED = 'Suspended' # User account is temporarily disabled
+    PENDING = 'Pending'     # User account is awaiting approval or activation
+    BANNED = 'Banned' 
 # 
 # User Model
 # This is the User Model and its variable to be created in the database
 #
 class User(UserMixin, db.Model):
     """
-    User Model Defination
+    User Model defination
     """
     __tablename__ = "users"
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
-    date_registered = db.Column(db.DateTime, nullable=False)
-    updated_at = db.Column(db.DateTime, nullable=False)
+    status = db.Column(db.Enum(UserStatus), nullable=False, default=UserStatus.ACTIVE)
+    created_at = db.Column(db.DateTime, nullable=False)
+    updated_at = db.Column(db.DateTime(timezone=True), onupdate=db.func.now())
     last_login = db.Column(db.DateTime, nullable=True)
     # Relationships
     roles = db.relationship('Role', secondary='user_roles', back_populates='users')
-    members = db.relationship('Member', backref='user', lazy=True)
+    voters = db.relationship('Voter', backref='user', lazy=True)
 
 
     def set_password(self, password):
@@ -93,7 +162,7 @@ class User(UserMixin, db.Model):
 #
 class UserRole(db.Model):
     """
-    User_Roles Model Defination 
+    User_Roles Model defination 
     """
     __tablename__ = "user_roles"
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
@@ -108,12 +177,13 @@ class UserRole(db.Model):
 #
 class County(db.Model):
     """
-    County Model Defination
+    County Model defination
     """
     __tablename__ = "counties"
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(100), nullable=False, unique=True)
     created_at = db.Column(db.DateTime, nullable=False)
+    update_at = db.Column(db.DateTime(timezone=True), onupdate=db.func.now())
     # Relationships
     constituencys = db.relationship('Constituency', backref='county', lazy=True)
 
@@ -125,13 +195,14 @@ class County(db.Model):
 #
 class Constituency(db.Model):
     """
-    Constituency Model Defination
+    Constituency Model defination
     """
     __tablename__ = "constituencies"
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     county_id = db.Column(db.Integer, db.ForeignKey('counties.id', name='fk_county_id'), nullable=False)
     name = db.Column(db.String(50), nullable=False, unique=True)
     created_at = db.Column(db.DateTime, nullable=False)
+    update_at = db.Column(db.DateTime(timezone=True), onupdate=db.func.now())
     # Relationships
     voters = db.relationship('Voter', backref='constituency', lazy=True)
 
@@ -143,7 +214,7 @@ class Constituency(db.Model):
 #
 class Voter(db.Model):
     """
-    Voter Model Defination
+    Voter Model defination
     """
     __tablename__ = "voters"
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
@@ -156,46 +227,108 @@ class Voter(db.Model):
     gender = db.Column(db.Enum(Gender), nullable=False)
     id_number = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(100), nullable=True)
-    voted = db.Column(db.Boolean, nullable=False, default=False)
-    has_read = db.Column(db.Boolean, nullable=False, default=False)
     date_registered = db.Column(db.DateTime, nullable=False)
+    updated_at = db.Column(db.DateTime(timezone=True), onupdate=db.func.now())
     # Relationships
-    
+    motionpolls = db.relationship('MotionPoll', backref='voter', lazy=True)
 
 
-
-class Question(db.Model):
+class Category(db.Model):
     """
-    Question Model Defination
+    Motion Category Model defination
     """
-    __tablename__ = "questions"
-    id = db.Column(db.Integer, primary_key=True)
+    __tablename__="categories"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(50), nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False)
+    updated_at = db.Column(db.DateTime(timezone=True), onupdate=db.func.now())
+    # Relationships
+    motions = db.relationship('Motion', backref='category', lazy=True)
+
+class FinalVote(Enum):
+    """
+    Final Vote Enum defination
+    """
+    SUPPORT = "Support"
+    DONT_SUPPORT = "Don't Support"
+    OTHER = "Other"
+    TIE = "Tie"
+    NO_VOTES = "No votes yet"
+
+class MotionStatus(Enum):
+    """
+    Motion Status Enum defination
+    """
+    DRAFT = 'Draft'
+    ACTIVE = 'Active'
+    CLOSED = 'Closed'
+    ARCHIVED = 'Archived'
+
+class Motion(db.Model):
+    """
+    Motion Model defination
+    """
+    __tablename__ = "motion"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id', name='fk_category_id'), nullable=False)
+    name = db.Column(db.String(100), nullable=False)
     text = db.Column(db.String(500), nullable=False)
+    final_vote = db.Column(db.Enum(FinalVote), nullable=False, default=FinalVote.NO_VOTES)
+    status = db.Column(db.Enum(MotionStatus), nullable=False, default=MotionStatus.DRAFT)
+    created_at = db.Column(db.DateTime, nullable=False)
+    updated_at = db.Column(db.DateTime(timezone=True), onupdate=db.func.now())
     # Relationships
-    options = db.relationship('Option', backref='question', lazy=True)
+    motionpolls = db.relationship('MotionPoll', backref='motion', lazy=True)
+    violations = db.relationship('Violation', backref='motion', lazy=True)
 
 
-
-class Option(db.Model):
+class SupportOptions(Enum):
     """
-    Option Model Defination
+    Motion Support Enum defination
     """
-    __tablename__ = "options"
-    id = db.Column(db.Integer, primary_key=True)
-    question_id = db.Column(db.Integer, db.ForeignKey('questions.id', name='fk_question_id'), nullable=False)
+    ISUPPORT = 'I support'
+    IDONOTSUPPORT = 'I do not Support'
+    OTHERS = 'Others'
+
+
+class MotionPoll(db.Model):
+    """
+    Motion Poll Model defination
+    """
+    __tablename__ = "MotionPoll"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    motion_id = db.Column(db.Integer, db.ForeignKey('motion.id', name='fk_motion_id'), nullable=False)
+    voter_id = db.Column(db.Integer, db.ForeignKey('voters.id', name='fk_voter_id'), nullable=False)
+    vote = db.Column(db.Enum(SupportOptions), nullable=False)
+    other_text = db.Column(db.Text)
+    voted_at = db.Column(db.DateTime, nullable=False)
+    updated_at = db.Column(db.DateTime(timezone=True), onupdate=db.func.now())
+
+
+
+class Violation(db.Model):
+    """
+    Violation Model defination
+    """
+    __tablename__ = "violation"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    motion_id = db.Column(db.Integer, db.ForeignKey('motion.id', name='fk_motion_id'), nullable=False)
     text = db.Column(db.String(200), nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False)
+    updated_at = db.Column(db.DateTime(timezone=True), onupdate=db.func.now())
     # Relationships
-    results = db.relationship('Result', backref='option', lazy=True)
+    violationpolls = db.relationship('ViolationPoll', backref='violation', lazy=True)
 
 
 
-class Result(db.Model):
+class ViolationPoll(db.Model):
     """
-    Result Model Defination
+    Violation Poll Model defination
     """
-    __tablename__ = "results"
-    id = db.Column(db.Integer, primary_key=True)
-    option_id = db.Column(db.Integer, db.ForeignKey('options.id', name='fk_option_id'), nullable=False)
-    no_support_score = db.Column(db.Integer, nullable=False)
-    others_score = db.Column(db.Integer, nullable=False)
-    last_sync_date = db.Column(db.DateTime, nullable=True)
+    __tablename__ = "violation_poll"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    violation_id = db.Column(db.Integer, db.ForeignKey('violation.id', name='fk_violation_id'), nullable=False)
+    vote = db.Column(db.Boolean, nullable=False, default=True)
+    date_voted = db.Column(db.DateTime, nullable=False)
+    voted_at = db.Column(db.DateTime, nullable=False)
+    updated_at = db.Column(db.DateTime(timezone=True), onupdate=db.func.now())

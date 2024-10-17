@@ -1,7 +1,7 @@
 from flask import jsonify
 from flask_wtf.csrf import CSRFError
 
-from extensions import db
+from app.extensions import db
 
 
 def register_error_handlers(app):

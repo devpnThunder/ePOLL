@@ -1,0 +1,85 @@
+/* ----------------------------------------------------------------------------*/
+/* General Page Setup Settings                                                 */
+/*-----------------------------------------------------------------------------*/
+/* 
+default color #1: #EC4D37; 
+default color #2: #1D1B1B;
+default font: Montserrat;
+*/
+html {
+    font-size: 14px;
+    position: relative;
+  }
+  
+  @media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+  }
+  
+  body {
+    margin-bottom: 60px;
+    scroll-behavior: smooth;
+    font-family: Montserrat, sans-serif !important;
+  }
+  
+  .bodyset {
+    /* background-color: #E3E2E2; */
+    background-color: #EAEAEA;
+  }
+  
+  .footer {
+    position: absolute;
+    color: #fff;
+    bottom: 0;
+    padding-bottom: 0;
+    margin-bottom: 0;
+    line-height: 60px;
+    width: 100%;
+  }
+  
+  .loginbody {
+    display: flex;
+    height: 100vh;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #EC4D37;
+    /* background-image: url(images/loginbg.jpg); */
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+  
+  /*-----------General Page Settings Ends Here--------------------------------- */
+  
+  
+  .iconbg {
+    color: #EC4D37;
+    align-items: center;
+  }
+  
+  .dashcard {
+    border: 0;
+    cursor: pointer;
+  }
+  
+  .dashcard:hover {
+    /* box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px; */
+    /* transition: all 0.2s ease-in-out;  */
+    /* border: 0; */
+  
+    background-color:#EC4D37;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.8);
+    border: 0;
+    color: #ffffff;
+  
+    .iconbg {
+      color: #fff;
+    }
+  }
+  
+  .clickable-row {
+    cursor: pointer;
+  }

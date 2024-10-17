@@ -13,6 +13,6 @@ class App_Config:
     # DEBUG = True
 
     # Database Connection
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASE_DIR, 'ePOLL.db')
-    # SQLALCHEMY_DATABASE_URI = 'sqlite:///testerApp.db'
+    # SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASE_DIR, 'ePOLL.db')
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///ePOLL.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False

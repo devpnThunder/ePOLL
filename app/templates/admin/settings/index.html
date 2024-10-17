@@ -1,0 +1,135 @@
+{% extends "shared/adminlayout.html" %}
+{% block title %} {{title}} {% endblock %}
+{% block content %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="position-fixed top-1 end-0 p-3" style="z-index: 1050;">
+    <div class="alert alert-{{ category }} alert-dismissible fade show text-center border-start border-0 border-5 border-{{category}} rounded-0" role="alert">
+        <strong>{{ message }}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+<div class="container mt-3">
+    <h3 class="display-3">{{title}}</h3>
+    <hr>
+    <div class="row row-cols-1 row-cols-md-4 g-4 align-content-center">
+        <div class="col">
+            <div class="card h-100 dashcard align-content-center justify-content-center">
+                <a class="btn rounded-0 border-0 text-center" href="{{ url_for('settings.categories') }}">
+                <div class="card-body">
+                    <div class="row row-cols-md-1 row-cols-md-2 g-2">
+                        <div class="col align-content-center text-start">
+                        <div class="iconbg">
+                            <i class="bi bi-clipboard-data display-5"></i>
+                        </div>
+                        </div>
+                    
+                        <div class="col align-content-center justify-content-center iconbg">
+                        <h6 class="card-title"><strong>Poll Category</strong></h6>
+                        <hr class="text-dark">        
+                        <h6><strong>{{count_category}}</strong></h6>
+                        </div>
+                    </div>
+                </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card h-100 dashcard align-content-center justify-content-center">
+                <a class="btn rounded-0 border-0 text-center" href="{{ url_for('settings.counties') }}">
+                <div class="card-body">
+                    <div class="row row-cols-md-1 row-cols-md-2 g-2">
+                        <div class="col align-content-center text-start">
+                        <div class="iconbg">
+                            <i class="bi bi-clipboard-data display-5"></i>
+                        </div>
+                        </div>
+                    
+                        <div class="col align-content-center justify-content-center iconbg">
+                        <h6 class="card-title"><strong>County</strong></h6>
+                        <hr class="text-dark">        
+                        <h6><strong>{{count_county}}</strong></h6>
+                        </div>
+                    </div>
+                </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card h-100 dashcard align-content-center justify-content-center">
+                <a class="btn rounded-0 border-0 text-center" href="{{ url_for('settings.constituencies') }}">
+                <div class="card-body">
+                    <div class="row row-cols-md-1 row-cols-md-2 g-2">
+                        <div class="col align-content-center text-start">
+                        <div class="iconbg">
+                            <i class="bi bi-clipboard-data display-5"></i>
+                        </div>
+                        </div>
+                    
+                        <div class="col align-content-center justify-content-center iconbg">
+                        <h6 class="card-title"><strong>Constituency</strong></h6>
+                        <hr class="text-dark">        
+                        <h6><strong>{{count_constituency}}</strong></h6>
+                        </div>
+                    </div>
+                </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card h-100 dashcard align-content-center justify-content-center">
+                <a class="btn rounded-0 border-0 text-center" href="{{ url_for('settings.users') }}">
+                <div class="card-body">
+                    <div class="row row-cols-md-1 row-cols-md-2 g-2">
+                        <div class="col align-content-center text-start">
+                        <div class="iconbg">
+                            <i class="bi bi-people display-5"></i>
+                        </div>
+                        </div>
+                    
+                        <div class="col align-content-center justify-content-center iconbg">
+                        <h6 class="card-title"><strong>System Users</strong></h6>
+                        <hr class="text-dark">        
+                        <h6><strong>{{count_users}}</strong></h6>
+                        </div>
+                    </div>
+                </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card h-100 dashcard align-content-center justify-content-center">
+                <a class="btn rounded-0 border-0 text-center" href="{{ url_for('settings.roles') }}">
+                <div class="card-body">
+                    <div class="row row-cols-md-1 row-cols-md-2 g-2">
+                        <div class="col align-content-center text-start">
+                        <div class="iconbg">
+                            <i class="bi bi-person-lock display-5"></i>
+                        </div>
+                        </div>
+                    
+                        <div class="col align-content-center justify-content-center iconbg">
+                        <h6 class="card-title"><strong>System Roles</strong></h6>
+                        <hr class="text-dark">        
+                        <h6><strong>{{count_roles}}</strong></h6>
+                        </div>
+                    </div>
+                </div>
+                </a>
+            </div>
+        </div>
+    </div>
+  
+</div>
+
+{% endblock %}

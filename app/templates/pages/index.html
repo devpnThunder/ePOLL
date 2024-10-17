@@ -1,0 +1,155 @@
+{% extends "shared/layout.html" %}
+{% block title %} {{ title }} {% endblock %}
+{% block content %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="position-fixed top-1 end-0 p-3" style="z-index: 1050;">
+    <div class="alert alert-{{ category }} alert-dismissible fade show text-center border-start border-0 border-5 border-{{category}} rounded-0" role="alert">
+        <strong>{{ message }}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+<div class="container mt-3">
+  <h3 class="display-3">Welcome ePOLL</h3>
+  <hr>
+
+  <section id="profileSection" name="profileSection" class="mb-5">
+    <div class="card shadow text-light rounded-5" style="background-color: #1D1B1B;">
+      <div class="card-body">
+        <div class="row row-cols-1 row-cols-md-3 g-4 align-content-center justify-content-evenly">
+          <div class="col align-content-center text-center">
+            <i class="bi bi-person-circle display-1"></i>
+            <p>Name:<strong>{{ current_user.username }}</strong></p>
+          </div>
+
+          <div class="col">
+            <h4><strong>Profile &nbsp;<a href="#" class="text-light border-0 rounded-0"><i class="bi bi-pencil-square"></i></a></strong></h4>
+            <hr>
+            <p>ID: <strong>{{ current_user.phone }}</strong></p>
+            <p>Email: <strong>{{ current_user.email }}</strong></p>
+            <p>Constituency: <strong>{{ current_user.phone }}</strong></p>
+          </div>
+
+          <div class="col">
+            <h4><strong>System Infor</strong></h4>
+            <hr>
+            <p>Role: <strong>{{ current_user.username }}</strong></p>
+            <p>Date Registered: <strong>{{ current_user.phone }}</strong></p>
+            <p>Last Login: <strong>{{ current_user.phone }}</strong></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="latestpollSection" name="latestpollSection" class="mb-5">
+    <legend class="display-5">Polls</legend>
+    <hr>
+    <h5>Latest Poll</h5>
+    <hr>
+    <div class="table-responsive text-center">
+      <table class="table table-hover align-content-center">
+        <thead>
+          <tr class="align-middle">
+              <th scope="col">#</th>
+              <th class="text-start" scope="col">Category</th>
+              <th class="text-start" scope="col">Title</th>
+              <th class="text-start" scope="col">Status</th>
+              <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody class="table-group-divider align-content-center">
+          {% for member in members %}
+              <tr class="clickable-row align-middle" data-href="{{ url_for('admin.memberdetails', id=member.id) }}">
+                  <th class="text-start" scope="row">{{ id }}</th>
+                  <th class="text-start">{{ category }}</th>
+                  <th class="text-start">{{ title }}</th>
+                  <td class="text-start">
+                      <strong>
+                          {% if member.status.value == 'Active' %}
+                          <span class="text-success">{{ member.status.value }}</span>
+                          {% elif member.status.value == 'Pending' %}
+                          <span class="text-primary">{{ member.status.value }}</span>
+                          {% elif member.status.value == 'Inactive' %}
+                          <span class="text-secondary">{{ member.status.value }}</span>
+                          {% elif member.status.value == 'Suspended' %}
+                          <span class="text-danger">{{ member.status.value }}</span>
+                          {% endif %}
+                      </strong>
+                  </td>
+                  <td>
+                      {% for role in current_user.roles %}
+                          {% if role.name == 'Admin', 'Manager' %}
+                          <a href="#" class="btn btn-sm btn-success rounded-0"><i class="bi bi-plus-lg"></i>&nbsp;Savings</a> |
+                          {% endif %}
+                          {% if role.name == 'Admin', 'Manager' %}
+                          <a href="#" class="btn btn-sm btn-warning rounded-0"><i class="bi bi-plus-lg"></i>&nbsp;Loan</a>
+                          {% endif %}
+                      {% endfor %}
+                  </td>
+              </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="olderpollSection" name="olderpollSection">
+    <h5>Older Poll</h5>
+    <hr>
+    <div class="table-responsive text-center">
+      <table class="table table-hover align-content-center">
+          <thead>
+              <tr class="align-middle">
+                  <th scope="col">#</th>
+                  <th class="text-start" scope="col">Category</th>
+                  <th class="text-start" scope="col">Title</th>
+                  <th class="text-start" scope="col">Status</th>
+                  <th scope="col"></th>
+              </tr>
+          </thead>
+          <tbody class="table-group-divider align-content-center">
+              {% for member in members %}
+                  <tr class="clickable-row align-middle" data-href="{{ url_for('admin.memberdetails', id=member.id) }}">
+                      <th class="text-start" scope="row">{{ id }}</th>
+                      <th class="text-start">{{ category }}</th>
+                      <th class="text-start">{{ title }}</th>
+                      <td class="text-start">
+                          <strong>
+                              {% if member.status.value == 'Active' %}
+                              <span class="text-success">{{ member.status.value }}</span>
+                              {% elif member.status.value == 'Pending' %}
+                              <span class="text-primary">{{ member.status.value }}</span>
+                              {% elif member.status.value == 'Inactive' %}
+                              <span class="text-secondary">{{ member.status.value }}</span>
+                              {% elif member.status.value == 'Suspended' %}
+                              <span class="text-danger">{{ member.status.value }}</span>
+                              {% endif %}
+                          </strong>
+                      </td>
+                      <td>
+                          {% for role in current_user.roles %}
+                              {% if role.name == 'Admin', 'Manager' %}
+                              <a href="#" class="btn btn-sm btn-success rounded-0"><i class="bi bi-plus-lg"></i>&nbsp;Savings</a> |
+                              {% endif %}
+                              {% if role.name == 'Admin', 'Manager' %}
+                              <a href="#" class="btn btn-sm btn-warning rounded-0"><i class="bi bi-plus-lg"></i>&nbsp;Loan</a>
+                              {% endif %}
+                          {% endfor %}
+                      </td>
+                  </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+  </div>
+  </section>
+  
+</div>
+
+{% endblock %}

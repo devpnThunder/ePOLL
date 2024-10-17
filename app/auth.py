@@ -1,7 +1,7 @@
 """Authentication configuration file that contains auth views and routes."""
 import functools
-from models import *
-from forms import *
+from app.models import *
+from app.forms import *
 from flask import (Blueprint, flash, g, redirect, render_template, session, url_for, abort)
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from werkzeug.security import check_password_hash
@@ -26,7 +26,7 @@ def register():
     """
     Register View
     """
-    form = RegisterForm()
+    form = RegisterVoterForm()
     form.roles.choices = [(r.id, r.name) for r in Role.query.filter(Role.name != 'Super').all()]
     
     if form.validate_on_submit():
