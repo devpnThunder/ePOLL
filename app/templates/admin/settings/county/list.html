@@ -47,14 +47,12 @@
                         <th scope="row">{{county.name}}</th>
                         <th scope="row">{{county.created_at}}</th>
                         <td scope="row">
-                            <a href="{{ url_for('settings.edit_county', id=county.id) }}"><i class="bi bi-pencil-square text-primary"></i></a> &nbsp;
-                            <a href="{{ url_for('settings.delete_county', id=county.id) }}"><i class="bi bi-trash text-danger"></i></a>
                             {% for role in current_user.roles %}
-                                {% if role.name == 'Admin', 'Manager' %}
-                                <a href="{{ url_for('admin.newsaving', id=member.id) }}" class="btn btn-sm btn-success rounded-0"><i class="bi bi-plus-lg text-danger"></i>&nbsp;Savings</a> |
+                                {% if role.name == 'Super', 'Admin' %}
+                                <a href="{{ url_for('settings.edit_county', id=county.id) }}"><i class="bi bi-pencil-square text-primary"></i></a> &nbsp;
                                 {% endif %}
-                                {% if role.name == 'Admin', 'Manager' %}
-                                <a href="{{ url_for('admin.newloan', id=member.id) }}" class="btn btn-sm btn-warning rounded-0"><i class="bi bi-plus-lg"></i>&nbsp;Loan</a>
+                                {% if role.name == 'Super' %}
+                                <a href="{{ url_for('settings.delete_county', id=county.id) }}"><i class="bi bi-trash text-danger"></i></a>
                                 {% endif %}
                             {% endfor %}
                         </td>

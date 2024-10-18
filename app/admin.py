@@ -24,11 +24,11 @@ def dashboard():
     Admin Dashboard Page
     """
     count_voters = Voter.query.count()
-    count_polls = MotionVote.query.count()
+    count_motions = Motion.query.count()
     count_category = Category.query.count()
     count_system_users = User.query.count()
     return render_template('admin/dashboard.html', title='Dashboard', 
-                           count_voters=count_voters, count_polls=count_polls,
+                           count_voters=count_voters, count_motions=count_motions,
                            count_category=count_category, count_system_users=count_system_users,
                            DASHBOARD=True)
 

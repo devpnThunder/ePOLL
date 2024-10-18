@@ -124,7 +124,6 @@
                     <th class="text-start" scope="col">Gender &nbsp;<a href="{{ url_for('admin.voters', sort_by='gender', sort_order='desc' if sort_order == 'asc' else 'asc') }}"><i class="bi {{'bi-sort-down-alt' if sort_order == 'asc' else 'bi-sort-up-alt'}}"></i></a></th>
                     <th class="text-start" scope="col">ID No.</th>
                     <th class="text-start" scope="col">Date Reg</th>
-                    <th scope="col"></th>
                 </tr>
             </thead>
             <tbody class="table-group-divider align-content-center">
@@ -135,16 +134,6 @@
                         <th class="text-start">{{voter.gender.value}}</th>
                         <th class="text-start">{{voter.id_number }}</th>
                         <td class="text-start">{{voter.date_registered }}</td>
-                        <td>
-                            {% for role in current_user.roles %}
-                                {% if role.name == 'Admin', 'Manager' %}
-                                <a href="" class="btn btn-sm btn-success rounded-0"><i class="bi bi-plus-lg"></i>&nbsp;Savings</a> |
-                                {% endif %}
-                                {% if role.name == 'Admin', 'Manager' %}
-                                <a href="" class="btn btn-sm btn-warning rounded-0"><i class="bi bi-plus-lg"></i>&nbsp;Loan</a>
-                                {% endif %}
-                            {% endfor %}
-                        </td>
                     </tr>
                 {% endfor %}
             </tbody>

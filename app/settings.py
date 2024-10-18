@@ -217,9 +217,10 @@ def new_user():
                     db.session.add(newuser)
                     db.session.commit()
 
-                    userrole = UserRole(user_id=newuser.id, role_id=roles)
-                    db.session.add(userrole)
-                    db.session.commit()
+                    for role_id in roles:
+                        userrole = UserRole(user_id=newuser.id, role_id=role_id)
+                        db.session.add(userrole)
+                        db.session.commit()
 
                     flash(f'Account for {email} is created successfully!', 'success')
                     return redirect(url_for('settings.users'))

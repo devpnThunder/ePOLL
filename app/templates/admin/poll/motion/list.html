@@ -50,16 +50,14 @@
                         <th scope="row">{{motion.final_vote.value}}</th>
                         <th scope="row">{{motion.status.value}}</th>
                         <th scope="row">{{motion.created_at}}</th>
-                        <td scope="row">
-                            <a href="{{ url_for('poll.edit_motion', id=motion.id) }}"><i class="bi bi-pencil-square text-primary"></i></a> &nbsp;
-                            <a href="{{ url_for('poll.delete_motion', id=motion.id) }}"><i class="bi bi-trash text-danger"></i></a> &nbsp;
+                        <td scope="row">                     
                             <a href="{{ url_for('poll.newvote', id=motion.id) }}"><i class="bi bi-person-check-fill text-success"></i></a>
                             {% for role in current_user.roles %}
-                                {% if role.name == 'Admin', 'Manager' %}
-                                <a href="{{ url_for('admin.newsaving', id=member.id) }}" class="btn btn-sm btn-success rounded-0"><i class="bi bi-plus-lg text-danger"></i>&nbsp;Savings</a> |
+                                {% if role.name == 'Super', 'Admin' %}
+                                <a href="{{ url_for('poll.edit_motion', id=motion.id) }}"><i class="bi bi-pencil-square text-primary"></i></a> &nbsp;|
                                 {% endif %}
-                                {% if role.name == 'Admin', 'Manager' %}
-                                <a href="{{ url_for('admin.newloan', id=member.id) }}" class="btn btn-sm btn-warning rounded-0"><i class="bi bi-plus-lg"></i>&nbsp;Loan</a>
+                                {% if role.name == 'Super' %}
+                                <a href="{{ url_for('poll.delete_motion', id=motion.id) }}"><i class="bi bi-trash text-danger"></i></a> &nbsp;
                                 {% endif %}
                             {% endfor %}
                         </td>

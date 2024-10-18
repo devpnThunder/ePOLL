@@ -10,45 +10,43 @@
     <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
   </head>
   <body>
-    <header class="sticky-top">
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow">
-            <div class="container align-content-center justify-content-between">
-                <a class="navbar-brand">
-                    <img src="{{url_for('static', filename='images/logo.png')}}" class="img-fluid" style="max-width: 20%; max-height: 20%;">
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex align-content-center justify-content-evenly">
-                    <!-- <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link active text-white" href="">About</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="">Projects</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link link" href="">Contact</a>
-                        </li>
-                    </ul> -->
-                    <ul class="navbar-nav flex-grow-1 align-content-center">
-                        {% if current_user.is_authenticated %}
-                        <li class="nav-item pe-3">
-                          <a class="btn btn-dark" href="#" data-bs-toggle="tooltip" data-bs-title="View Notifications"><i class="bi bi-bell"></i>&nbsp; <span class="badge text-bg-light">4</span></a>
-                        </li>
-                        <li class="nav-item">
-                          <a class="btn btn-dark" href="{{ url_for ('auth.logout') }}" data-bs-toggle="tooltip" data-bs-title="logout"><i class="bi bi-power"></i></a>
-                        </li>
-                        {% else %}
-                        <li class="nav-item">
-                          <a class="btn btn-dark" href="{{ url_for ('auth.login') }}" data-bs-toggle="tooltip" data-bs-title="login"><i class="bi bi-box-arrow-in-right"></i>&nbsp; Log-In</a>
-                        </li>
-                        {% endif %}
-                      </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
+    <nav class="navbar navbar-expand-lg sticky-top bg-body-tertiary border-bottom border-body" data-bs-theme="light">
+      <div class="container">
+        <a class="navbar-brand" href="{{ url_for('account.profile') }}"><img src="{{url_for('static', filename='images/logo.png')}}" class="img-fluid" style="max-width: 20%; max-height: 20%;"></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarVOTER" aria-controls="navbarVOTER" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarVOTER">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0 nav-underline">
+            <!-- <li class="nav-item">
+            <a class="nav-link {% if DASHBOARD %}active{% endif %}" href="{{ url_for('admin.dashboard') }}"><h5>Dashboard</h5></a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link {% if VOTERS %}active{% endif %}" href="{{ url_for('admin.voters') }}"><h5>Voters</h5></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if POLLS %}active{% endif %}" href="{{ url_for('poll.index') }}"><h5>Polls</h5></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if SETTINGS %}active{% endif %}" href="{{ url_for('settings.index') }}"><h5>Settings</h5></a>
+            </li> -->
+          </ul>
+          <span class="navbar">
+            <ul class="navbar-nav flex-grow-1 align-content-center">
+              {% if current_user.is_authenticated %}
+              <li class="nav-item">
+              <a class="btn btn-dark" href="{{ url_for ('auth.logout') }}" data-bs-toggle="tooltip" data-bs-title="logout"><i class="bi bi-power"></i></a>
+              </li>
+              {% else %}
+              <li class="nav-item">
+              <a class="btn btn-dark" href="{{ url_for ('auth.login') }}" data-bs-toggle="tooltip" data-bs-title="login"><i class="bi bi-box-arrow-in-right"></i>&nbsp; Log-In</a>
+              </li>
+              {% endif %}
+            </ul>
+          </span>
+        </div>
+      </div>
+    </nav>
     
     
     <main class="mt-3 mb-3">

@@ -141,8 +141,8 @@ class CountyForm(FlaskForm):
     """
     code = IntegerField("Code", validators=[DataRequired()], 
                         render_kw={"placeholder":"Code", "class":"form-control", "required":"required"})
-    name = StringField("Group Name", validators=[DataRequired(), Length(max=100)],
-                       render_kw={"placeholder":"Group Name", "class":"form-control", "required":"required"})
+    name = StringField("County Name", validators=[DataRequired(), Length(max=100)],
+                       render_kw={"placeholder":"County Name", "class":"form-control", "required":"required"})
 #========================================================================================#
 
 
@@ -155,8 +155,8 @@ class ConstituencyForm(FlaskForm):
     """
     county_id = SelectField("County", coerce=str, validators=[DataRequired()],
                         render_kw={"placeholder":"County", "class":"form-control form-select", "required":"required"})
-    name = StringField("Group Name", validators=[DataRequired(), Length(max=100)],
-                       render_kw={"placeholder":"Group Name", "class":"form-control", "required":"required"})
+    name = StringField("Constituency Name", validators=[DataRequired(), Length(max=100)],
+                       render_kw={"placeholder":"Constituency Name", "class":"form-control", "required":"required"})
 #========================================================================================#
 
 #----------------------------------------------------------------------------------------#
@@ -191,8 +191,8 @@ class MotionForm(FlaskForm):
                         render_kw={"placeholder":"Category", "class":"form-control form-select", "required":"required"})
     name = StringField("Motion Name", validators=[DataRequired(), Length(max=100)],
                        render_kw={"placeholder":"Motion Name", "class":"form-control", "required":"required"})
-    text = StringField("Question", validators=[DataRequired(), Length(max=500)],
-                       render_kw={"placeholder":"Question", "class":"form-control", "required":"required"})
+    text = StringField("Motion Text", validators=[DataRequired(), Length(max=500)],
+                       render_kw={"placeholder":"Motion Text", "class":"form-control", "required":"required"})
 #========================================================================================#
 
 

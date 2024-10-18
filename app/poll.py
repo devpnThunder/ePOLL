@@ -356,20 +356,35 @@ def agenda_votes():
     """
     # Query to get all agendas
     agendas = Agenda.query.all()
+
+    agenda_vote_data = []
+
     for agenda in agendas:
         agenda_id = agenda.id
+
         total_votes = AgendaVote.query.filter_by(agenda_id=agenda_id).count()
-        yes_votes = AgendaVote.query.filter_by(agenda_id=agenda_id).where(AgendaVote.vote == True).count()
-        no_votes = AgendaVote.query.filter_by(agenda_id=agenda_id).where(AgendaVote.vote == False).count()
+        yes_votes = AgendaVote.query.filter_by(agenda_id=agenda_id, vote='True').count()
+        no_votes = AgendaVote.query.filter_by(agenda_id=agenda_id, vote='False').count()
+        
+        agenda_vote_data.append({
+            'agenda': agenda,
+            'text': agenda.text,
+            'total_votes': total_votes,
+            'yes_votes': yes_votes,
+            'no_votes': no_votes
+        })
+    
 
     page = request.args.get('page', 1, type=int)
     page_size = request.args.get('page_size', 20, type=int)  # Get page size from query params or default to 20
     agendavoteList = AgendaVote.query.order_by(AgendaVote.voted_at.desc()).paginate(page=page, per_page=page_size)
-    if not agendavoteList:
-        flash('No Agenda vote records added Yet!', 'warning')
+    
+    if not agendavoteList.items:  # `items` returns the records on the current page
+        flash('No Agenda vote records added yet!', 'warning')
 
     return render_template('admin/poll/agendavote/list.html', title='Agenda Votes',
-                           total_votes=total_votes, yes_votes=yes_votes, no_votes=no_votes,
+                           agenda_vote_data=agenda_vote_data,
+                           agendavoteList=agendavoteList,
                            POLLS=True)
 
 
