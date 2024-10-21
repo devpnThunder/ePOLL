@@ -27,15 +27,48 @@ def profile():
     """
     Load voter profile
     """
-    records = Voter.query.filter(Voter.user_id == current_user.id).all()
-    count_voters = Voter.query.count()
+    voter = Voter.query.filter(Voter.user_id == current_user.id).first()
 
-    motionlist = Motion.query.filter(Motion.status == 'ACTIVE').all()
+    motionList = Motion.query.filter(Motion.status == 'PUBLISHED').all()
+
+
+    if not voter:
+        # Handle the case where the voter is not found
+        flash('No voter profile found for the current user!', 'danger')
+        return render_template('auth/login.html', title='Voters', SETTINGS=True)
+    
+
+    # Check if the voter has already voted
+    for motion in motionList:
+        check_if_vote = MotionVote.query.filter(MotionVote.voter_id == voter.id, MotionVote.motion_id == motion.id).first()
+
+    if check_if_vote:
+        flash('You have already voted', 'warning')
+
+
+    count_isupport = MotionVote.query.filter(MotionVote.vote == 'ISUPPORT').count()
+    count_idonotsupport = MotionVote.query.filter(MotionVote.vote == 'IDONOTSUPPORT').count()
+    count_others = MotionVote.query.filter(MotionVote.vote == 'OTHERS').count()
+    highest_count = max(count_isupport, count_idonotsupport, count_others)
+
+    # Determine which category has the highest count
+    if highest_count == count_isupport:
+        highest_category = 'ISUPPORT'
+    elif highest_count == count_idonotsupport:
+        highest_category = 'IDONOTSUPPORT'
+    else:
+        highest_category = 'OTHERS'
+
+
     return render_template('pages/index.html', 
                            title='Voters',
-                           records=records,
-                           count_voters=count_voters,
-                           motionlist=motionlist,
+                           voter=voter,
+                           count_isupport=count_isupport,
+                           count_idonotsupport=count_idonotsupport,
+                           count_others=count_others,
+                           highest_count=highest_count,
+                           highest_category=highest_category,
+                           motionList=motionList,
                            SETTINGS=True)
 
 
@@ -125,20 +158,75 @@ def motions():
     return render_template('pages/index.html', count_motion=count_motion, motionlist=motionlist, POLLS=True)
 
 
-@accbp.route('/newvote/<int:id>/', methods=['GET', 'POST'])
+@accbp.route('/isupport/<int:id>/', methods=['GET', 'POST'])
 # @login_required
 # @role_required('Super', 'Admin')
-def newvote(id):
+def isupport(id):
     """
-    Create New Motion Vote
+    Vote ISUPPORT
     """
     motion_check = Motion.query.get_or_404(id)
+
+    error = None
+
+    if error:
+        flash(error)
+
+    try:
+        isupport = MotionVote(voter_id=current_user.id, motion_id=motion_check.id, vote=SupportOptions.ISUPPORT, voted_at=datetime.now())
+        db.session.add(isupport)
+        db.session.commit()
+
+        flash('Thank you for voting!', 'success')
+        return redirect(url_for('account.profile'))
+    except Exception as e:
+        flash(f'There was an error saving data: {e}!', 'danger')
+        db.session.rollback
+        return redirect(url_for('account.profile'))
+    
+
+@accbp.route('/idonotsupport/<int:id>/', methods=['GET', 'POST'])
+# @login_required
+# @role_required('Super', 'Admin')
+def idonotsupport(id):
+    """
+    Vote IDONOTSUPPORT
+    """
+    motion_check = Motion.query.get_or_404(id)
+
+    error = None
+
+    if error:
+        flash(error)
+
+    try:
+        isupport = MotionVote(voter_id=current_user.id, motion_id=motion_check.id, vote=SupportOptions.IDONOTSUPPORT, voted_at=datetime.now())
+        db.session.add(isupport)
+        db.session.commit()
+
+        flash('Thank you for voting!', 'success')
+        return redirect(url_for('account.profile'))
+    except Exception as e:
+        flash(f'There was an error saving data: {e}!', 'danger')
+        db.session.rollback
+        return redirect(url_for('account.profile'))
+    
+
+@accbp.route('/others/<int:id>/', methods=['GET', 'POST'])
+# @login_required
+# @role_required('Super', 'Admin')
+def others(id):
+    """
+    Vote Others
+    """
+
+    motion_check = Motion.query.get_or_404(id)
     form = MotionVoteForm()
-    form.motion_id.choices = [(m.id, m.name) for m in Motion.query.filter(Motion.id == id)]
+    # form.category_id.choices = [(c.id, c.name) for c in Category.query.filter(Category.name == SupportOptions.OTHERS)]
 
     if form.validate_on_submit():
-        motion_id = form.motion_id.data
-        vote = form.vote.data
+        # motion_id = form.motion_id.data
+        # vote = form.vote.data
         other_text = form.other_text.data
 
         error = None
@@ -147,18 +235,19 @@ def newvote(id):
             flash(error)
         else:
             try:
-                newvote = MotionVote(voter_id=current_user.id, motion_id=motion_id, vote=vote, other_text=other_text, voted_at=datetime.now())
-                db.session.add(newvote)
+                othervote = MotionVote(voter_id=current_user.id, motion_id=motion_check.id, vote=SupportOptions.OTHERS, other_text=other_text, voted_at=datetime.now())
+                db.session.add(othervote)
                 db.session.commit()
 
                 flash('Thank you for voting!', 'success')
-                return redirect(url_for('aaccount.profile'))
+                return redirect(url_for('account.profile'))
             except Exception as e:
                 flash(f'There was an error saving data: {e}!', 'danger')
                 db.session.rollback
                 return redirect(url_for('account.profile'))
             
-    return render_template('pages/motion.html', motion_check=motion_check, form=form, POLLS=True)
+    return render_template('pages/motion.html', title='New Motion', form=form, POLLS=True)
+            
 #===End=of=Motion=routes===========================================#
 
 

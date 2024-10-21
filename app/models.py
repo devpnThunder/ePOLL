@@ -262,7 +262,7 @@ class MotionStatus(Enum):
     Motion Status Enum defination
     """
     DRAFT = 'Draft'
-    ACTIVE = 'Active'
+    PUBLISHED = 'Published'
     CLOSED = 'Closed'
     ARCHIVED = 'Archived'
 

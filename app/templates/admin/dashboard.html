@@ -16,7 +16,7 @@
 {% endwith %}
 
 <div class="container mt-3">
-  <h3 class="display-3">ePOLL Admin Dashboard</h3>
+  <h3 class="display-3 text-center">Welcome To ePOLL Admin Panel</h3>
   <hr>
 
   <section id="profileSection" name="profileSection" class="mb-5">
@@ -25,16 +25,19 @@
         <div class="row row-cols-1 row-cols-md-2 g-4 align-content-center justify-content-evenly">
           <div class="col align-content-center text-center">
             <i class="bi bi-person-circle display-1"></i>
-            <p>Name:<strong>{{ current_user.username }}</strong></p>
+            <p><strong>{{ current_user.email }}</strong></p>
           </div>
 
           <div class="col">
             <h4><strong>System Info &nbsp;<a href="#" class="text-light border-0 rounded-0"><i class="bi bi-pencil-square"></i></a></strong></h4>
             <hr>
-            <p>Email: <strong>{{ current_user.phone }}</strong></p>
-            <p>Role: <strong>{{ current_user.email }}</strong></p>
-            <p>Date Registered: <strong>{{ current_user.phone }}</strong></p>
-            <p>Last Login: <strong>{{ current_user.phone }}</strong></p>
+            <p>Role:
+              {% for role in current_user.roles %}
+              <strong>{{ role.name }}</strong>
+              {% endfor %}</p>
+            </p>
+            <p>Date Registered: <strong>{{ current_user.created_at }}</strong></p>
+            <p>Last Login: <strong>{{ current_user.last_login }}</strong></p>
           </div>
         </div>
       </div>
@@ -69,28 +72,6 @@
 
         <div class="col">
             <div class="card h-100 dashcard align-content-center justify-content-center">
-              <a class="btn rounded-0 border-0 text-center" href="{{ url_for('poll.motions') }}">
-                <div class="card-body">
-                  <div class="row row-cols-md-1 row-cols-md-2 g-2">
-                      <div class="col align-content-center text-start">
-                        <div class="iconbg">
-                          <i class="bi bi-clipboard-data display-5"></i>
-                        </div>
-                      </div>
-                  
-                      <div class="col align-content-center justify-content-center iconbg">
-                        <h6 class="card-title"><strong>Total Motions</strong></h6>
-                        <hr class="text-dark">        
-                        <h6><strong>{{count_motions}}</strong></h6>
-                      </div>
-                  </div>
-                </div>
-              </a>
-            </div>
-        </div>
-
-        <div class="col">
-            <div class="card h-100 dashcard align-content-center justify-content-center">
               <a class="btn rounded-0 border-0 text-center" href="{{ url_for('settings.categories') }}">
                 <div class="card-body">
                   <div class="row row-cols-md-1 row-cols-md-2 g-2">
@@ -112,6 +93,28 @@
         </div>
 
         <div class="col">
+          <div class="card h-100 dashcard align-content-center justify-content-center">
+            <a class="btn rounded-0 border-0 text-center" href="{{ url_for('poll.motions') }}">
+              <div class="card-body">
+                <div class="row row-cols-md-1 row-cols-md-2 g-2">
+                    <div class="col align-content-center text-start">
+                      <div class="iconbg">
+                        <i class="bi bi-clipboard-data display-5"></i>
+                      </div>
+                    </div>
+                
+                    <div class="col align-content-center justify-content-center iconbg">
+                      <h6 class="card-title"><strong>Total Motions</strong></h6>
+                      <hr class="text-dark">        
+                      <h6><strong>{{count_motions}}</strong></h6>
+                    </div>
+                </div>
+              </div>
+            </a>
+          </div>
+      </div>
+
+        <div class="col">
             <div class="card h-100 dashcard align-content-center justify-content-center">
               <a class="btn rounded-0 border-0 text-center" href="{{ url_for('settings.users') }}">
                 <div class="card-body">
@@ -123,9 +126,9 @@
                       </div>
                   
                       <div class="col align-content-center justify-content-center iconbg">
-                        <h6 class="card-title"><strong>System Users</strong></h6>
+                        <h6 class="card-title"><strong>Total Agendas</strong></h6>
                         <hr class="text-dark">        
-                        <h6><strong>{{count_system_users}}</strong></h6>
+                        <h6><strong>{{count_agendas}}</strong></h6>
                       </div>
                   </div>
                 </div>

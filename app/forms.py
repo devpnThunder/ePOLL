@@ -204,10 +204,10 @@ class MotionVoteForm(FlaskForm):
     """
     Motion Poll form defination
     """
-    motion_id = SelectField("Motion", coerce=str, validators=[DataRequired()],
-                        render_kw={"placeholder":"Motion", "class":"form-control form-select", "required":"required"})
-    vote = SelectField("Vote", choices=[(vote.name, vote.value) for vote in SupportOptions],
-                        render_kw={"placeholder": "Vote", "class": "form-control form-select", "required":"required"})
+    # motion_id = SelectField("Motion", coerce=str, validators=[DataRequired()],
+    #                     render_kw={"placeholder":"Motion", "class":"form-control form-select", "required":"required"})
+    # vote = SelectField("Vote", choices=[(vote.name, vote.value) for vote in SupportOptions],
+    #                     render_kw={"placeholder": "Vote", "class": "form-control form-select", "required":"required"})
     other_text = StringField("Other Option Text", validators=[Length(max=100)],
                             render_kw={"placeholder":"Other Option Text", "type":"text", "class":"form-control"})
 #========================================================================================#

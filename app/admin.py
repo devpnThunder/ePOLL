@@ -24,12 +24,14 @@ def dashboard():
     Admin Dashboard Page
     """
     count_voters = Voter.query.count()
-    count_motions = Motion.query.count()
     count_category = Category.query.count()
-    count_system_users = User.query.count()
+    count_motions = Motion.query.count()
+    count_agendas = Agenda.query.count()
     return render_template('admin/dashboard.html', title='Dashboard', 
-                           count_voters=count_voters, count_motions=count_motions,
-                           count_category=count_category, count_system_users=count_system_users,
+                           count_voters=count_voters,
+                           count_category=count_category,
+                           count_motions=count_motions,
+                           count_agendas=count_agendas,
                            DASHBOARD=True)
 
 
@@ -45,9 +47,6 @@ def voters():
     sort_by = request.args.get('sort_by', 'date_registered')  # Default sorting by date_registered
     sort_order = request.args.get('sort_order', 'asc')  # Default sorting order is ascending
     query = Voter.query
-
-    if not query:
-        flash('No Voter records added Yet!', 'warning')
 
     # searching
     if search:
@@ -67,19 +66,12 @@ def voters():
     page_size = request.args.get('page_size', 20, type=int)  # Get page size from query params or default to 15
     votersList = query.order_by(Voter.date_registered.desc()).paginate(page=page, per_page=page_size)
 
+    if not votersList.items:  # `items` returns the records on the current page
+        flash('No voter records added yet!', 'info')
+
     return render_template('admin/voter/list.html', title='Voters', 
                            count_voters=count_voters, votersList=votersList, 
                            sort_by=sort_by, sort_order=sort_order, page_size=page_size, VOTERS=True)
-
-
-@abp.route('/polls/')
-# @login_required
-# @role_required('Super', 'Admin')
-def polls():
-    """
-    Poll landing Page
-    """
-    return render_template('admin/poll/index.html', title='Polls', POLL=True)
 
 
 #===End=of=Admin=routes=============================================================================#

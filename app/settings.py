@@ -46,13 +46,18 @@ def roles():
     """
     Load System Roles
     """
+    role_count = Role.query.count()
+
     page = request.args.get('page', 1, type=int)
     page_size = request.args.get('page_size', 20, type=int)  # Get page size from query params or default to 20
     system_roles = Role.query.order_by(Role.created_at.desc()).paginate(page=page, per_page=page_size)
-    if not system_roles:
-        flash('No Role records added Yet!', 'warning')
+    
+    if not system_roles.items:
+        flash('No role records added yet!', 'info')
 
-    return render_template('admin/settings/role/list.html', title='Roles', system_roles=system_roles, SETTINGS=True)
+    return render_template('admin/settings/role/list.html', title='Roles',
+                           role_count=role_count, 
+                           system_roles=system_roles, SETTINGS=True)
 
 
 @sbp.route('/new_role/', methods=['GET', 'POST'])
@@ -123,7 +128,7 @@ def edit_role(id):
         else:
             try:
                 db.session.commit()
-                flash(f'{selected_role.name} role is updated Successfully!', 'success')
+                flash(f'{selected_role.name} role is updated successfully!', 'success')
                 return redirect(url_for('settings.roles'))
             except Exception as e:
                 flash(f'There was an error during the update: {e}!', 'danger')
@@ -176,13 +181,18 @@ def users():
     """
     Load System Users
     """
+    user_count = User.query.count()
+
     page = request.args.get('page', 1, type=int)
     page_size = request.args.get('page_size', 20, type=int)  # Get page size from query params or default to 20
     system_users = User.query.order_by(User.created_at.desc()).paginate(page=page, per_page=page_size)
-    if not system_users:
-        flash('No User records added Yet!', 'warning')
+    
+    if not system_users.items:
+        flash('No user records added yet!', 'info')
 
-    return render_template('admin/settings/user/list.html', title='Users', system_users=system_users, SETTINGS=True)
+    return render_template('admin/settings/user/list.html', title='Users', 
+                           user_count=user_count,
+                           system_users=system_users, SETTINGS=True)
 
 
 @sbp.route('/new_user/', methods=['GET', 'POST'])
@@ -261,7 +271,7 @@ def edit_user(id):
             try:
                 UserRole(user_id=selected_user.id, role_id=form.roles.data)
                 db.session.commit()
-                flash(f'{selected_user.email} is updated Successfully!', 'success')
+                flash(f'{selected_user.email} is updated successfully!', 'success')
                 return redirect(url_for('settings.users'))
             except Exception as e:
                 flash(f'There was an error during the update: {e}!', 'danger')
@@ -317,14 +327,16 @@ def counties():
     """
     Load all available counties
     """
-    page = request.args.get('page', 1, type=int)
-    page_size = request.args.get('page_size', 20, type=int)  # Get page size from query params or default to 20
-    all_counties = County.query.order_by(County.created_at.desc()).paginate(page=page, per_page=page_size)
-    if not all_counties:
-        flash('No County records added Yet!', 'warning')
+    count_county = County.query.count()
 
-    return render_template('admin/settings/county/list.html', 
-                           title='Counties', all_counties=all_counties, SETTINGS=True)
+    all_counties = County.query.order_by(County.created_at.desc()).all()
+    
+    if not all_counties:
+        flash('No county records added Yet!', 'info')
+
+    return render_template('admin/settings/county/list.html', title='Counties', 
+                           count_county=count_county,
+                           all_counties=all_counties, SETTINGS=True)
 
 
 @sbp.route('/new_county/', methods=['GET', 'POST'])
@@ -381,7 +393,7 @@ def edit_county(id):
         else:
             try:
                 db.session.commit()
-                flash(f'{selected_county.name} county is updated Successfully!', 'success')
+                flash(f'{selected_county.name} county is updated successfully!', 'success')
                 return redirect(url_for('settings.counties'))
             except Exception as e:
                 flash(f'There was an error during the update: {e}!', 'danger')
@@ -429,14 +441,33 @@ def constituencies():
     """
     Load all available constituencies
     """
+    count_const = Constituency.query.count()
+
+    sort_by = request.args.get('sort_by', 'created_at')  # Default sorting by date_registered
+    sort_order = request.args.get('sort_order', 'asc')  # Default sorting order is ascending
+    query = Constituency.query
+
+    if not query:
+        flash('No Constituency records added Yet!', 'warning')
+        
+    # sorting
+    if sort_order == 'asc':
+        query = query.order_by(getattr(Constituency, sort_by).asc())
+    else:
+        query = query.order_by(getattr(Constituency, sort_by).desc())
+
     page = request.args.get('page', 1, type=int)
     page_size = request.args.get('page_size', 20, type=int)  # Get page size from query params or default to 20
-    all_constituencies = Constituency.query.order_by(Constituency.created_at.desc()).paginate(page=page, per_page=page_size)
-    if not all_constituencies:
-        flash('No Role records added Yet!', 'warning')
+    all_const = query.order_by(Constituency.created_at.desc()).paginate(page=page, per_page=page_size)
+
+    if not all_const.items:  # `items` returns the records on the current page
+        flash('No constituents records added yet!', 'info')
 
     return render_template('admin/settings/constituency/list.html', 
-                           title='Constituencies', all_constituencies=all_constituencies, SETTINGS=True)
+                           title='Constituencies',
+                           count_const=count_const,
+                           sort_by=sort_by, sort_order=sort_order, 
+                           all_const=all_const, SETTINGS=True)
 
 
 @sbp.route('/new_constituency/', methods=['GET', 'POST'])
@@ -495,7 +526,7 @@ def edit_constituency(id):
         else:
             try:
                 db.session.commit()
-                flash(f'{selected_constituency.name} constituency is updated Successfully!', 'success')
+                flash(f'{selected_constituency.name} constituency is updated successfully!', 'success')
                 return redirect(url_for('settings.constituencies'))
             except Exception as e:
                 flash(f'There was an error during the update: {e}!', 'danger')
@@ -544,14 +575,18 @@ def categories():
     """
     Load all available categories
     """
+    count_category = Category.query.count()
+
     page = request.args.get('page', 1, type=int)
     page_size = request.args.get('page_size', 20, type=int)  # Get page size from query params or default to 20
     all_categories = Category.query.order_by(Category.created_at.desc()).paginate(page=page, per_page=page_size)
-    if not all_categories:
-        flash('No Category records added Yet!', 'warning')
+    
+    if not all_categories.items:
+        flash('No category records added yet!', 'info')
 
-    return render_template('admin/settings/category/list.html', 
-                           title='Categories', all_categories=all_categories, SETTINGS=True)
+    return render_template('admin/settings/category/list.html', title='Categories', 
+                           count_category=count_category,
+                           all_categories=all_categories, SETTINGS=True)
 
 
 @sbp.route('/new_category/', methods=['GET', 'POST'])
@@ -606,7 +641,7 @@ def edit_category(id):
         else:
             try:
                 db.session.commit()
-                flash(f'{selected_category.name} category is updated Successfully!', 'success')
+                flash(f'{selected_category.name} category is updated successfully!', 'success')
                 return redirect(url_for('settings.categories'))
             except Exception as e:
                 flash(f'There was an error during the update: {e}!', 'danger')

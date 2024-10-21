@@ -48,8 +48,9 @@ def motions():
     page = request.args.get('page', 1, type=int)
     page_size = request.args.get('page_size', 20, type=int)  # Get page size from query params or default to 20
     motionlist = Motion.query.order_by(Motion.created_at.desc()).paginate(page=page, per_page=page_size)
-    if not motionlist:
-        flash('No Motion records added Yet!', 'warning')
+    
+    if not motionlist.items:
+        flash('No motion records added yet!', 'info')
 
     return render_template('admin/poll/motion/list.html', title='Motions', count_motion=count_motion, motionlist=motionlist, POLLS=True)
 
@@ -87,6 +88,56 @@ def new_motion():
                 return redirect(url_for('poll.motions'))
             
     return render_template('admin/poll/motion/create.html', title='New Motion', form=form, POLLS=True)
+
+
+@pbp.route('/publish_motion/<int:id>/', methods=['GET', 'POST'])
+# @login_required
+# @role_required('Super')
+def publish_motion(id):
+    """
+    Publish Motion View or 404 if not found
+    """
+    selected_motion = Motion.query.get_or_404(id)
+
+    error = None
+
+    if error:
+        flash(error)
+
+    try:
+        selected_motion.status = MotionStatus.PUBLISHED
+        db.session.commit()
+        flash('Motion is published successfully!', 'success')
+        return redirect(url_for('poll.motions'))
+    except Exception as e:
+        flash(f'There was an error during the publish: {e}!', 'danger')
+        db.session.rollback()
+        return redirect(url_for('poll.motions'))
+    
+
+@pbp.route('/close_motion/<int:id>/', methods=['GET', 'POST'])
+# @login_required
+# @role_required('Super')
+def close_motion(id):
+    """
+    Close Motion View or 404 if not found
+    """
+    selected_motion = Motion.query.get_or_404(id)
+
+    error = None
+
+    if error:
+        flash(error)
+
+    try:
+        selected_motion.status = MotionStatus.CLOSED
+        db.session.commit()
+        flash('Motion is closed successfully!', 'success')
+        return redirect(url_for('poll.motions'))
+    except Exception as e:
+        flash(f'There was an error during the publish: {e}!', 'danger')
+        db.session.rollback()
+        return redirect(url_for('poll.motions'))
 
 
 @pbp.route('/edit_motion/<int:id>/', methods=['GET', 'POST'])
@@ -177,8 +228,9 @@ def motion_votes():
     page = request.args.get('page', 1, type=int)
     page_size = request.args.get('page_size', 20, type=int)  # Get page size from query params or default to 20
     pollList = MotionVote.query.order_by(MotionVote.voted_at.desc()).paginate(page=page, per_page=page_size)
-    if not pollList:
-        flash('No Poll records added Yet!', 'warning')
+    
+    if not pollList.items:
+        flash('No motion vote records added yet!', 'info')
 
     return render_template('admin/poll/motionvote/list.html', title='Motion Results', 
                            count_isupport=count_isupport,
@@ -243,8 +295,9 @@ def agendas():
     page = request.args.get('page', 1, type=int)
     page_size = request.args.get('page_size', 20, type=int)  # Get page size from query params or default to 20
     agendalist = Agenda.query.order_by(Agenda.created_at.desc()).paginate(page=page, per_page=page_size)
-    if not agendalist:
-        flash('No Agenda records added Yet!', 'warning')
+    
+    if not agendalist.items:
+        flash('No agenda records added yet!', 'info')
 
     return render_template('admin/poll/agenda/list.html', title='Agendas', count_agenda=count_agenda, agendalist=agendalist, POLLS=True)
 
@@ -380,7 +433,7 @@ def agenda_votes():
     agendavoteList = AgendaVote.query.order_by(AgendaVote.voted_at.desc()).paginate(page=page, per_page=page_size)
     
     if not agendavoteList.items:  # `items` returns the records on the current page
-        flash('No Agenda vote records added yet!', 'warning')
+        flash('No agenda vote records added yet!', 'info')
 
     return render_template('admin/poll/agendavote/list.html', title='Agenda Votes',
                            agenda_vote_data=agenda_vote_data,

@@ -16,24 +16,23 @@
 {% endwith %}
 
 <div class="container mt-3">
-  <h3 class="display-3">Welcome ePOLL</h3>
+  <h3 class="display-3">Welcome To ePOLL</h3>
   <hr>
 
   <section id="profileSection" name="profileSection" class="mb-5">
     <div class="card shadow text-light rounded-5" style="background-color: #1D1B1B;">
       <div class="card-body">
-        {%for record in records%}
         <div class="row row-cols-1 row-cols-md-3 g-4 align-content-center justify-content-evenly">
           <div class="col align-content-center text-center">
             <i class="bi bi-person-circle display-1"></i>
-            <p>Name:<strong>{{record.fullname}}</strong></p>
+            <p><strong>{{voter.fullname}}</strong></p>
           </div>
 
           <div class="col">
             <h4><strong>Profile &nbsp;<a href="#" class="text-light border-0 rounded-0"><i class="bi bi-pencil-square"></i></a></strong></h4>
             <hr>
-            <p>ID: <strong>{{record.id}}</strong></p>
-            <p>Email: <strong>{{record.email}}</strong></p>
+            <p>ID: <strong>{{voter.id}}</strong></p>
+            <p>Email: <strong>{{voter.email}}</strong></p>
           </div>
 
           <div class="col">
@@ -46,7 +45,6 @@
             <p>Last Login: <strong>{{current_user.last_login}}</strong></p>
           </div>
         </div>
-        {%endfor%}
       </div>
     </div>
   </section>
@@ -54,38 +52,42 @@
   <h4 class="display-5">Polls</h4>
   <hr>
   <section id="motionSection" name="motionSection" class="mb-5">
-    <h3>Motions</h4>
+    <h3>Active Motions</h4>
     <hr>
     <div class="table-responsive">
       <table class="table table-hover align-content-center">
           <thead>
               <tr class="align-middle">
                   <th scope="col">Category</th>
-                  <th scope="col">Name</th>
-                  <th scope="col">Vote</th>
+                  <th scope="col">Motion</th>
+                  <th scope="col">I Suport</th>
+                  <th scope="col">I Do Not Suport</th>
+                  <th scope="col">Others</th>
                   <th scope="col">Status</th>
-                  <th scope="col">Date Created</th>
                   <th scope="col"></th>
               </tr>
           </thead>
           <tbody class="table-group-divider align-content-center">
-              {% for motion in motionlist %}
+              {% for motion in motionList %}
                   <tr class="clickable-row align-middle" data-href="#">
                       <th scope="row">{{motion.category.name}}</th>
                       <th scope="row">{{motion.name}}</th>
-                      <th scope="row">{{motion.final_vote.value}}</th>
+                      <th scope="row">{{count_isupport}}</th>
+                      <th scope="row">{{count_idonotsupport}}</th>
+                      <th scope="row">{{count_others}}</th>
                       <th scope="row">{{motion.status.value}}</th>
-                      <th scope="row">{{motion.created_at}}</th>
-                      <td scope="row">                     
-                          <a href="{{ url_for('poll.newvote', id=motion.id) }}"><i class="bi bi-person-check-fill text-success"></i></a>
-                          {% for role in current_user.roles %}
-                              {% if role.name == 'Super', 'Admin' %}
-                              <a href="{{ url_for('poll.edit_motion', id=motion.id) }}"><i class="bi bi-pencil-square text-primary"></i></a> &nbsp;|
-                              {% endif %}
-                              {% if role.name == 'Super' %}
-                              <a href="{{ url_for('poll.delete_motion', id=motion.id) }}"><i class="bi bi-trash text-danger"></i></a> &nbsp;
-                              {% endif %}
-                          {% endfor %}
+                      <td scope="row">
+                        {% if check_if_vote == 'True' %}
+                        You have already voter!
+                        {% else %}    
+                        {% for role in current_user.roles %}
+                        {% if role.name == 'Voter' %}
+                          <a href="{{ url_for('account.isupport', id=motion.id) }}" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="I Support"><i class="bi bi-hand-thumbs-up text-success h4"></i></a> |
+                          <a href="{{ url_for('account.idonotsupport', id=motion.id) }}" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="I Do Not Support"><i class="bi bi-hand-thumbs-down text-secondary h4"></i></a> |
+                          <a href="{{ url_for('account.others', id=motion.id) }}" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Others"><i class="bi bi-emoji-neutral-fill h4"></i></a>
+                        {% endif %}
+                      {% endfor %}     
+                        {% endif %}          
                       </td>
                   </tr>
               {% endfor %}
@@ -94,7 +96,7 @@
     </div>
   </section>
 
-  <section id="agendaSection" name="agendaSection" class="mb-5">
+  <!-- <section id="agendaSection" name="agendaSection" class="mb-5">
     <h3>Agendas</h4>
     <hr>
     <div class="table-responsive">
@@ -129,7 +131,7 @@
           </tbody>
       </table>
     </div>
-  </section>
+  </section> -->
   
 </div>
 

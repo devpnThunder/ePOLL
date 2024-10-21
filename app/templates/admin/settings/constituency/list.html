@@ -26,22 +26,71 @@
         </div>
 
         <div class="col text-end align-content-center">
-            <h5>Constituency:&nbsp;<strong class="fst-italic"></strong></h4>
+            <h5>Constituency:&nbsp;<strong class="fst-italic">{{ count_const }}</strong></h4>
         </div>
     </div>
+
     <h4>List of {{title}}</h4>
+    <div class="row align-content-center">
+        <div class="col">
+            <div class="text-start" id="itemsperpage">
+                <!-- Page Size Dropdown -->
+                <form method="get" action="">
+                    <label for="page_size">Items per page:</label>
+                    <select id="page_size" name="page_size" onchange="this.form.submit()">
+                        <option value="20" {% if page_size == 20 %}selected{% endif %}>20</option>
+                        <option value="30" {% if page_size == 30 %}selected{% endif %}>30</option>
+                        <option value="50" {% if page_size == 50 %}selected{% endif %}>50</option>
+                    </select>
+                    <input type="hidden" name="page" value="1">
+                    <!-- Retain sort_by and sort_order parameters -->
+                    <input type="hidden" name="sort_by" value="{{ sort_by }}">
+                    <input type="hidden" name="sort_order" value="{{ sort_order }}">
+                </form>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="text-end" id="pagination_section">
+                {% if all_const.has_prev %}
+                <a class="btn btn-sm btn-secondary rounded-0" href="{{ url_for('settings.constituencies', page=all_const.prev_num, sort_by=sort_by, sort_order=sort_order, page_size=page_size) }}">
+                <i class="bi bi-arrow-left-circle-fill"></i>&nbsp; Previous
+                </a>
+                {% endif %}
+            
+                {% for number in all_const.iter_pages() %}
+                {% if all_const.page != number %}
+                    <a class="page-number btn btn-sm btn-secondary rounded-0" href="{{ url_for('settings.constituencies', page=number) }}"> 
+                        {{ number }}
+                    </a>
+                {% else %}
+                    <span class='current-page-number'>{{ number }}</span>
+                {% endif %}
+                {% endfor %}
+            
+                {% if all_const.has_next %}
+                <a class="btn btn-sm btn-secondary rounded-0" href="{{ url_for('settings.constituencies', page=all_const.next_num, sort_by=sort_by, sort_order=sort_order, page_size=page_size) }}">Next &nbsp;
+                <i class="bi bi-arrow-right-circle-fill"></i>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <hr>
+
     <div class="table-responsive">
         <table class="table table-hover align-content-center">
             <thead>
                 <tr class="align-middle">
-                    <th scope="col">County</th>
+                    <th scope="col">County &nbsp;<a href="{{ url_for('settings.constituencies', sort_by='county_id', sort_order='desc' if sort_order == 'asc' else 'asc') }}"><i class="bi {{'bi-sort-down-alt' if sort_order == 'asc' else 'bi-sort-up-alt'}}"></i></a></th>
                     <th scope="col">Name</th>
                     <th scope="col">Date Created</th>
                     <th scope="col"></th>
                 </tr>
             </thead>
             <tbody class="table-group-divider align-content-center">
-                {% for constituency in all_constituencies %}
+                {% for constituency in all_const %}
                     <tr class="clickable-row align-middle" data-href="#">
                         <th scope="row">{{constituency.county.name}}</th>
                         <th scope="row">{{constituency.name}}</th>
@@ -61,6 +110,53 @@
             </tbody>
         </table>
     </div>
+
+    <div class="row align-content-center mb-5">
+        <div class="col">
+            <div class="text-start" id="itemsperpage">
+                <!-- Page Size Dropdown -->
+                <form method="get" action="">
+                    <label for="page_size">Items per page:</label>
+                    <select id="page_size" name="page_size" onchange="this.form.submit()">
+                        <option value="20" {% if page_size == 20 %}selected{% endif %}>20</option>
+                        <option value="30" {% if page_size == 30 %}selected{% endif %}>30</option>
+                        <option value="50" {% if page_size == 50 %}selected{% endif %}>50</option>
+                    </select>
+                    <input type="hidden" name="page" value="1">
+                    <!-- Retain sort_by and sort_order parameters -->
+                    <input type="hidden" name="sort_by" value="{{ sort_by }}">
+                    <input type="hidden" name="sort_order" value="{{ sort_order }}">
+                </form>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="text-end" id="pagination_section">
+                {% if all_const.has_prev %}
+                <a class="btn btn-sm btn-secondary rounded-0" href="{{ url_for('settings.constituencies', page=all_const.prev_num, sort_by=sort_by, sort_order=sort_order, page_size=page_size) }}">
+                <i class="bi bi-arrow-left-circle-fill"></i>&nbsp; Previous
+                </a>
+                {% endif %}
+            
+                {% for number in all_const.iter_pages() %}
+                {% if all_const.page != number %}
+                    <a class="page-number btn btn-sm btn-secondary rounded-0" href="{{ url_for('settings.constituencies', page=number) }}"> 
+                        {{ number }}
+                    </a>
+                {% else %}
+                    <span class='current-page-number'>{{ number }}</span>
+                {% endif %}
+                {% endfor %}
+            
+                {% if all_const.has_next %}
+                <a class="btn btn-sm btn-secondary rounded-0" href="{{ url_for('settings.constituencies', page=all_const.next_num, sort_by=sort_by, sort_order=sort_order, page_size=page_size) }}">Next &nbsp;
+                <i class="bi bi-arrow-right-circle-fill"></i>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
 </div>
 
 {% endblock %}
