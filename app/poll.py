@@ -20,8 +20,8 @@ pbp = Blueprint('poll', __name__, url_prefix='/poll')
 # Contains all Motion routes and any associated routes
 #=================================================================#
 @pbp.route('/motions/')
-# @login_required
-# @role_required('Super', 'Admin')
+@login_required
+@role_required('Super', 'Admin')
 def motions():
     """
     Load Motions list
@@ -38,8 +38,8 @@ def motions():
 
 
 @pbp.route('/new_motion/', methods=['GET', 'POST'])
-# @login_required
-# @role_required('Super', 'Admin')
+@login_required
+@role_required('Super', 'Admin')
 def new_motion():
     """
     Create New Motion
@@ -73,8 +73,8 @@ def new_motion():
 
 
 @pbp.route('/publish_motion/<int:id>/', methods=['GET', 'POST'])
-# @login_required
-# @role_required('Super')
+@login_required
+@role_required('Super', 'Admin')
 def publish_motion(id):
     """
     Publish Motion View or 404 if not found
@@ -98,8 +98,8 @@ def publish_motion(id):
     
 
 @pbp.route('/close_motion/<int:id>/', methods=['GET', 'POST'])
-# @login_required
-# @role_required('Super')
+@login_required
+@role_required('Super', 'Admin')
 def close_motion(id):
     """
     Close Motion View or 404 if not found
@@ -123,8 +123,8 @@ def close_motion(id):
 
 
 @pbp.route('/edit_motion/<int:id>/', methods=['GET', 'POST'])
-# @login_required
-# @role_required('Super')
+@login_required
+@role_required('Super', 'Admin')
 def edit_motion(id):
     """
     Edit Motion View or 404 if not found
@@ -156,8 +156,8 @@ def edit_motion(id):
 
 
 @pbp.route('/delete_motion/<int:id>/', methods=['GET', 'POST'])
-# @login_required
-# @role_required('Super', 'Admin')
+@login_required
+@role_required('Super', 'Admin')
 def delete_motion(id):
     """
     Delete Motion View or 404 if not found.
@@ -188,8 +188,8 @@ def delete_motion(id):
 # Contains all Motion Poll routes and any associated routes
 #=================================================================#
 @pbp.route('/motion_votes/<int:id>/', methods=['GET', 'POST'])
-# @login_required
-# @role_required('Super', 'Admin')
+@login_required
+@role_required('Super', 'Admin')
 def motion_votes(id):
     """
     Load Motion Polls list page
@@ -223,8 +223,8 @@ def motion_votes(id):
 
 
 @pbp.route('/newvote/<int:id>/', methods=['GET', 'POST'])
-# @login_required
-# @role_required('Super', 'Admin')
+@login_required
+@role_required('Super', 'Admin')
 def newvote(id):
     """
     Create New Motion Vote
@@ -266,8 +266,8 @@ def newvote(id):
 # Contains all Motion Agenda routes and any associated routes
 #=================================================================#
 @pbp.route('/agendas/')
-# @login_required
-# @role_required('Super', 'Admin')
+@login_required
+@role_required('Super', 'Admin')
 def agendas():
     """
     Load Agendas list
@@ -284,8 +284,8 @@ def agendas():
 
 
 @pbp.route('/new_agenda/', methods=['GET', 'POST'])
-# @login_required
-# @role_required('Super', 'Admin')
+@login_required
+@role_required('Super', 'Admin')
 def new_agenda():
     """
     Create New Agenda
@@ -318,8 +318,8 @@ def new_agenda():
 
 
 @pbp.route('/edit_agenda/<int:id>/', methods=['GET', 'POST'])
-# @login_required
-# @role_required('Super')
+@login_required
+@role_required('Super')
 def edit_agenda(id):
     """
     Edit Agenda View or 404 if not found
@@ -350,8 +350,8 @@ def edit_agenda(id):
 
 
 @pbp.route('/delete_agenda/<int:id>/', methods=['GET', 'POST'])
-# @login_required
-# @role_required('Super', 'Admin')
+@login_required
+@role_required('Super', 'Admin')
 def delete_agenda(id):
     """
     Delete Agenda View or 404 if not found.
@@ -382,8 +382,8 @@ def delete_agenda(id):
 # Contains all Agenda Vote routes and any associated routes
 #=================================================================#
 @pbp.route('/agenda_votes/<int:id>/')
-# @login_required
-# @role_required('Super', 'Admin')
+@login_required
+@role_required('Super', 'Admin')
 def agenda_votes(id):
     """
     Load Agenda Votes list page
@@ -425,8 +425,8 @@ def agenda_votes(id):
 
 
 @pbp.route('/new_agendavote/<int:id>/', methods=['GET', 'POST'])
-# @login_required
-# @role_required('Super', 'Admin')
+@login_required
+@role_required('Super', 'Admin')
 def new_agendavote(id):
     """
     Create New Agenda Vote

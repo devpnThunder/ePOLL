@@ -29,7 +29,7 @@
           </div>
 
           <div class="col">
-            <h4><strong>Profile &nbsp;<a href="#" class="text-light border-0 rounded-0"><i class="bi bi-pencil-square"></i></a></strong></h4>
+            <h4><strong>Profile &nbsp;<a href="{{ url_for('account.edit_profile', id=current_user.id) }}" class="text-light border-0 rounded-0"><i class="bi bi-pencil-square"></i></a></strong></h4>
             <hr>
             <p>ID: <strong>{{voter.id}}</strong></p>
             <p>Email: <strong>{{voter.email}}</strong></p>

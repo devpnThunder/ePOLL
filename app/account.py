@@ -21,8 +21,8 @@ def load_user(user_id):
     return User.query.get(user_id)
 
 @accbp.route('/profile/')
-# @login_required
-# @role_required('Super')
+@login_required
+@role_required('Voter')
 def profile():
     """
     Load voter profile
@@ -80,8 +80,8 @@ def profile():
 
 
 @accbp.route('/edit_profile/<string:id>/', methods=['GET', 'POST'])
-# @login_required
-# @role_required('Super')
+@login_required
+@role_required('Voter')
 def edit_profile(id):
     """
     Edit Voter Profile route or 404 if not found
@@ -109,18 +109,18 @@ def edit_profile(id):
                 # UserRole(user_id=selected_user.id, role_id=form.roles.data)
                 db.session.commit()
                 flash(f'{voter_profile.surname} is updated Successfully!', 'success')
-                return redirect(url_for('voter.index'))
+                return redirect(url_for('account.profile'))
             except Exception as e:
                 flash(f'There was an error during the update: {e}!', 'danger')
                 db.session.rollback()
-                return redirect(url_for('voter.index'))
+                return redirect(url_for('account.profile'))
 
-    return render_template('pages/edit.html', title='Edit Profile', form=form, VOTER=True)
+    return render_template('pages/editprofile.html', title='Edit Profile', form=form, VOTER=True)
 
 
 @accbp.route('/delete_account/<string:id>/', methods=['GET', 'POST'])
-# @login_required
-# @role_required('Super', 'Admin')
+@login_required
+@role_required('Voter')
 def delete_account(id):
     """
     Delete User View or 404 if not found.
@@ -148,8 +148,8 @@ def delete_account(id):
 # Contains all Motion routes and any associated routes
 #=================================================================#
 @accbp.route('/motions/')
-# @login_required
-# @role_required('Super', 'Admin')
+@login_required
+@role_required('Voter')
 def motions():
     """
     Load Motions list

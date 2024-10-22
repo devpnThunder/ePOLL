@@ -17,8 +17,8 @@ abp = Blueprint('admin', __name__, url_prefix='/admin')
 #===================================================================================================#
 
 @abp.route('/dashboard/')
-# @login_required
-# @role_required('Super', 'Admin')
+@login_required
+@role_required('Super', 'Admin')
 def dashboard():
     """
     Admin Dashboard Page
@@ -36,8 +36,8 @@ def dashboard():
 
 
 @abp.route('/voters/', methods=["GET", "POST"])
-# @login_required
-# @role_required('Super', 'Admin')
+@login_required
+@role_required('Super', 'Admin')
 def voters():
     """
     available voters

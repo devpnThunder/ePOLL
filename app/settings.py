@@ -17,8 +17,8 @@ sbp = Blueprint('settings', __name__, url_prefix='/settings')
 # Contains all the routes and pages for Admin View Pages
 #===================================================================================================#
 @sbp.route('/index/')
-# @login_required
-# @role_required('Super', 'Admin')
+@login_required
+@role_required('Super', 'Admin')
 def index():
     """
     Settings landing Page
@@ -40,8 +40,8 @@ def index():
 # Contains all Role routes and any associated routes
 #=================================================================#
 @sbp.route('/roles/')
-# @login_required
-# @role_required('Super', 'Admin')
+@login_required
+@role_required('Super', 'Admin')
 def roles():
     """
     Load System Roles
@@ -61,8 +61,8 @@ def roles():
 
 
 @sbp.route('/new_role/', methods=['GET', 'POST'])
-# @login_required
-# @role_required('Super', 'Admin')
+@login_required
+@role_required('Super', 'Admin')
 def new_role():
     """
     Create New Role
@@ -101,8 +101,8 @@ def new_role():
 
 
 @sbp.route('/edit_role/<string:id>/', methods=['GET', 'POST'])
-# @login_required
-# @role_required('Super')
+@login_required
+@role_required('Super', 'Admin')
 def edit_role(id):
     """
     Edit Role View or 404 if not found
@@ -139,8 +139,8 @@ def edit_role(id):
 
 
 @sbp.route('/delete_role/<string:id>/', methods=['GET', 'POST'])
-# @login_required
-# @role_required('Super', 'Admin')
+@login_required
+@role_required('Super', 'Admin')
 def delete_role(id):
     """
     Delete Role View or 404 if not found.
@@ -175,8 +175,8 @@ def delete_role(id):
 # Contains all User routes and any associated routes
 #=================================================================#
 @sbp.route('/users/')
-# @login_required
-# @role_required('Super', 'Admin')
+@login_required
+@role_required('Super', 'Admin')
 def users():
     """
     Load System Users
@@ -196,8 +196,8 @@ def users():
 
 
 @sbp.route('/new_user/', methods=['GET', 'POST'])
-# @login_required
-# @role_required('Super', 'Admin')
+@login_required
+@role_required('Super', 'Admin')
 def new_user():
     """
     Create New User
@@ -243,8 +243,8 @@ def new_user():
 
 
 @sbp.route('/edit_user/<string:id>/', methods=['GET', 'POST'])
-# @login_required
-# @role_required('Super')
+@login_required
+@role_required('Super', 'Admin')
 def edit_user(id):
     """
     Edit User View or 404 if not found
@@ -285,8 +285,8 @@ def edit_user(id):
 
 
 @sbp.route('/delete_user/<string:id>/', methods=['GET', 'POST'])
-# @login_required
-# @role_required('Super', 'Admin')
+@login_required
+@role_required('Super', 'Admin')
 def delete_user(id):
     """
     Delete User View or 404 if not found.
@@ -321,8 +321,8 @@ def delete_user(id):
 # Contains all County routes and any associated routes
 #=================================================================#
 @sbp.route('/counties/')
-# @login_required
-# @role_required('Super', 'Admin')
+@login_required
+@role_required('Super', 'Admin')
 def counties():
     """
     Load all available counties
@@ -340,8 +340,8 @@ def counties():
 
 
 @sbp.route('/new_county/', methods=['GET', 'POST'])
-# @login_required
-# @role_required('Super', 'Admin')
+@login_required
+@role_required('Super', 'Admin')
 def new_county():
     """
     Create New County
@@ -373,8 +373,8 @@ def new_county():
 
 
 @sbp.route('/edit_county/<int:id>/', methods=['GET', 'POST'])
-# @login_required
-# @role_required('Super')
+@login_required
+@role_required('Super', 'Admin')
 def edit_county(id):
     """
     Edit County View or 404 if not found
@@ -404,8 +404,8 @@ def edit_county(id):
 
 
 @sbp.route('/delete_county/<int:id>/', methods=['GET', 'POST'])
-# @login_required
-# @role_required('Super', 'Admin')
+@login_required
+@role_required('Super', 'Admin')
 def delete_county(id):
     """
     Delete County View or 404 if not found.
@@ -435,8 +435,8 @@ def delete_county(id):
 # Contains all Constituency routes and any associated routes
 #=================================================================#
 @sbp.route('/constituencies/')
-# @login_required
-# @role_required('Super', 'Admin')
+@login_required
+@role_required('Super', 'Admin')
 def constituencies():
     """
     Load all available constituencies
@@ -471,8 +471,8 @@ def constituencies():
 
 
 @sbp.route('/new_constituency/', methods=['GET', 'POST'])
-# @login_required
-# @role_required('Super', 'Admin')
+@login_required
+@role_required('Super', 'Admin')
 def new_constituency():
     """
     Create New Constituency
@@ -505,8 +505,8 @@ def new_constituency():
 
 
 @sbp.route('/edit_constituency/<int:id>/', methods=['GET', 'POST'])
-# @login_required
-# @role_required('Super')
+@login_required
+@role_required('Super', 'Admin')
 def edit_constituency(id):
     """
     Edit Constituency View or 404 if not found
@@ -537,8 +537,8 @@ def edit_constituency(id):
 
 
 @sbp.route('/delete_constituency/<int:id>/', methods=['GET', 'POST'])
-# @login_required
-# @role_required('Super', 'Admin')
+@login_required
+@role_required('Super', 'Admin')
 def delete_constituency(id):
     """
     Delete Constituency View or 404 if not found.
@@ -569,8 +569,8 @@ def delete_constituency(id):
 # Contains all Category routes and any associated routes
 #=================================================================#
 @sbp.route('/categories/')
-# @login_required
-# @role_required('Super', 'Admin')
+@login_required
+@role_required('Super', 'Admin')
 def categories():
     """
     Load all available categories
@@ -590,8 +590,8 @@ def categories():
 
 
 @sbp.route('/new_category/', methods=['GET', 'POST'])
-# @login_required
-# @role_required('Super', 'Admin')
+@login_required
+@role_required('Super', 'Admin')
 def new_category():
     """
     Create New Category
@@ -622,8 +622,8 @@ def new_category():
 
 
 @sbp.route('/edit_category/<int:id>/', methods=['GET', 'POST'])
-# @login_required
-# @role_required('Super')
+@login_required
+@role_required('Super', 'Admin')
 def edit_category(id):
     """
     Edit Category View or 404 if not found
@@ -652,8 +652,8 @@ def edit_category(id):
 
 
 @sbp.route('/delete_category/<int:id>/', methods=['GET', 'POST'])
-# @login_required
-# @role_required('Super', 'Admin')
+@login_required
+@role_required('Super', 'Admin')
 def delete_category(id):
     """
     Delete Category View or 404 if not found.
