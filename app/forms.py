@@ -198,9 +198,9 @@ class MotionForm(FlaskForm):
 
 
 #========================================================================================#
-# Motion Poll Form
+# Motion Vote Others Option Poll Form
 #========================================================================================#
-class MotionVoteForm(FlaskForm):
+class MotionVoteOthersForm(FlaskForm):
     """
     Motion Poll form defination
     """

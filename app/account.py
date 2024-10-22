@@ -37,10 +37,15 @@ def profile():
         flash('No voter profile found for the current user!', 'danger')
         return render_template('auth/login.html', title='Voters', SETTINGS=True)
     
+    check_if_vote = None
+    already_voted = False
 
     # Check if the voter has already voted
     for motion in motionList:
         check_if_vote = MotionVote.query.filter(MotionVote.voter_id == voter.id, MotionVote.motion_id == motion.id).first()
+        if check_if_vote:
+            already_voted = True
+            break
 
     if check_if_vote:
         flash('You have already voted', 'warning')
@@ -63,6 +68,7 @@ def profile():
     return render_template('pages/index.html', 
                            title='Voters',
                            voter=voter,
+                           already_voted=already_voted,
                            count_isupport=count_isupport,
                            count_idonotsupport=count_idonotsupport,
                            count_others=count_others,
@@ -221,7 +227,7 @@ def others(id):
     """
 
     motion_check = Motion.query.get_or_404(id)
-    form = MotionVoteForm()
+    form = MotionVoteOthersForm()
     # form.category_id.choices = [(c.id, c.name) for c in Category.query.filter(Category.name == SupportOptions.OTHERS)]
 
     if form.validate_on_submit():

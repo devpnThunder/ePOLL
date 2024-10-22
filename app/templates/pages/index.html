@@ -54,6 +54,9 @@
   <section id="motionSection" name="motionSection" class="mb-5">
     <h3>Active Motions</h4>
     <hr>
+    {% if already_voted %}
+    <p>You have already voted!</p>
+    {% else %}
     <div class="table-responsive">
       <table class="table table-hover align-content-center">
           <thead>
@@ -77,7 +80,7 @@
                       <th scope="row">{{count_others}}</th>
                       <th scope="row">{{motion.status.value}}</th>
                       <td scope="row">
-                        {% if check_if_vote == 'True' %}
+                        {% if already_voted %}
                         You have already voter!
                         {% else %}    
                         {% for role in current_user.roles %}
@@ -94,6 +97,7 @@
           </tbody>
       </table>
     </div>
+    {% endif %}
   </section>
 
   <!-- <section id="agendaSection" name="agendaSection" class="mb-5">

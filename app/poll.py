@@ -15,24 +15,6 @@ pbp = Blueprint('poll', __name__, url_prefix='/poll')
 # Admin View routes
 # Contains all the routes and pages for Admin View Pages
 #===================================================================================================#
-@pbp.route('/index/')
-# @login_required
-# @role_required('Super', 'Admin')
-def index():
-    """
-    Poll landing Page
-    """
-    count_motion = Motion.query.count()
-    count_motion_vote = MotionVote.query.count()
-    count_agenda = Agenda.query.count()
-    count_agenda_vote = AgendaVote.query.count()
-    return render_template('admin/poll/index.html', title='Polls',
-                           count_motion=count_motion, count_motion_vote=count_motion_vote,
-                           count_agenda=count_agenda,
-                           count_agenda_vote=count_agenda_vote,
-                           POLLS=True)
-
-
 #=================================================================#
 # Motion routes section starts Here
 # Contains all Motion routes and any associated routes
@@ -52,7 +34,7 @@ def motions():
     if not motionlist.items:
         flash('No motion records added yet!', 'info')
 
-    return render_template('admin/poll/motion/list.html', title='Motions', count_motion=count_motion, motionlist=motionlist, POLLS=True)
+    return render_template('admin/poll/motion/list.html', title='Motion Polls', count_motion=count_motion, motionlist=motionlist, POLLS=True)
 
 
 @pbp.route('/new_motion/', methods=['GET', 'POST'])
@@ -205,16 +187,18 @@ def delete_motion(id):
 # Motion Poll routes section starts Here
 # Contains all Motion Poll routes and any associated routes
 #=================================================================#
-@pbp.route('/motion_votes/')
+@pbp.route('/motion_votes/<int:id>/', methods=['GET', 'POST'])
 # @login_required
 # @role_required('Super', 'Admin')
-def motion_votes():
+def motion_votes(id):
     """
     Load Motion Polls list page
     """
-    count_isupport = MotionVote.query.filter(MotionVote.vote == 'ISUPPORT').count()
-    count_idonotsupport = MotionVote.query.filter(MotionVote.vote == 'IDONOTSUPPORT').count()
-    count_others = MotionVote.query.filter(MotionVote.vote == 'OTHERS').count()
+    votes = MotionVote.query.get_or_404(id)
+
+    count_isupport = votes.query.filter(MotionVote.vote == 'ISUPPORT').count()
+    count_idonotsupport = votes.query.filter(MotionVote.vote == 'IDONOTSUPPORT').count()
+    count_others = votes.query.filter(MotionVote.vote == 'OTHERS').count()
     highest_count = max(count_isupport, count_idonotsupport, count_others)
 
     # Determine which category has the highest count
@@ -224,21 +208,18 @@ def motion_votes():
         highest_category = 'IDONOTSUPPORT'
     else:
         highest_category = 'OTHERS'
-
-    page = request.args.get('page', 1, type=int)
-    page_size = request.args.get('page_size', 20, type=int)  # Get page size from query params or default to 20
-    pollList = MotionVote.query.order_by(MotionVote.voted_at.desc()).paginate(page=page, per_page=page_size)
     
-    if not pollList.items:
+    if not votes:
         flash('No motion vote records added yet!', 'info')
 
-    return render_template('admin/poll/motionvote/list.html', title='Motion Results', 
+    return render_template('admin/poll/motion/votes.html', title='Motion Votes Results', 
+                           votes=votes,
                            count_isupport=count_isupport,
                            count_idonotsupport=count_idonotsupport,
                            count_others=count_others,
                            highest_count=highest_count,
                            highest_category=highest_category,
-                           pollList=pollList, POLLS=True)
+                           POLLS=True)
 
 
 @pbp.route('/newvote/<int:id>/', methods=['GET', 'POST'])
@@ -249,7 +230,7 @@ def newvote(id):
     Create New Motion Vote
     """
     motion_check = Motion.query.get_or_404(id)
-    form = MotionVoteForm()
+    form = MotionVoteOthersForm()
     form.motion_id.choices = [(m.id, m.name) for m in Motion.query.filter(Motion.id == id)]
 
     if form.validate_on_submit():
@@ -400,15 +381,16 @@ def delete_agenda(id):
 # Agenda Vote routes section starts Here
 # Contains all Agenda Vote routes and any associated routes
 #=================================================================#
-@pbp.route('/agenda_votes/')
+@pbp.route('/agenda_votes/<int:id>/')
 # @login_required
 # @role_required('Super', 'Admin')
-def agenda_votes():
+def agenda_votes(id):
     """
     Load Agenda Votes list page
     """
     # Query to get all agendas
     agendas = Agenda.query.all()
+    votes = MotionVote.query.get_or_404(id)
 
     agenda_vote_data = []
 
@@ -436,6 +418,7 @@ def agenda_votes():
         flash('No agenda vote records added yet!', 'info')
 
     return render_template('admin/poll/agendavote/list.html', title='Agenda Votes',
+                           votes=votes,
                            agenda_vote_data=agenda_vote_data,
                            agendavoteList=agendavoteList,
                            POLLS=True)

@@ -21,7 +21,6 @@
 
     <div class="row align-content-center mb-3">
         <div class="col text-start">
-            <a href="{{ url_for('poll.index') }}" class="btn btn-secondary"><i class="bi bi-arrow-left-circle-fill"></i>&nbsp; Back to Polls</a>&nbsp;
             <a href="{{ url_for('poll.new_motion') }}" class="btn btn-success"><i class="bi bi-plus-lg"></i>&nbsp; New Motion</a>
         </div>
 
@@ -50,17 +49,40 @@
                         <th scope="row">{{motion.final_vote.value}}</th>
                         <th scope="row">{{motion.status.value}}</th>
                         <th scope="row">{{motion.created_at}}</th>
-                        <td scope="row">                     
-                            {% for role in current_user.roles %}
-                                {% if role.name == 'Super', 'Admin' %}
-                                <a href="{{ url_for('poll.publish_motion', id=motion.id) }}"><i class="bi bi-send-check-fill text-success h4"></i></a> &nbsp; |
-                                <a href="{{ url_for('poll.close_motion', id=motion.id) }}"><i class="bi bi-send-dash-fill text-secondary h4"></i></a> &nbsp; |
-                                <a href="{{ url_for('poll.edit_motion', id=motion.id) }}"><i class="bi bi-pencil-square text-primary h4"></i></a> &nbsp;
-                                {% endif %}
-                                {% if role.name == 'Super' %}
-                                | <a href="{{ url_for('poll.delete_motion', id=motion.id) }}"><i class="bi bi-trash text-danger h4"></i></a> &nbsp;
-                                {% endif %}
-                            {% endfor %}
+                        <td scope="row">
+                            {% if current_user.is_authenticated %}
+                            <a class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Action</a> 
+                            <ul class="dropdown-menu dropdown-menu-light">
+                                {% for role in current_user.roles %}
+                                    {% if role.name == 'Super', 'Admin' %}
+                                    <li>
+                                        <a class="dropdown-item" href="{{ url_for('poll.motion_votes', id=motion.id) }}"><i class="bi bi-grid text-success"></i>&nbsp; Votes</a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a class="dropdown-item" href="{{ url_for('poll.agendas', id=motion.id) }}"><i class="bi bi-grid text-success"></i>&nbsp; Agenda</a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a class="dropdown-item" href="{{ url_for('poll.publish_motion', id=motion.id) }}"><i class="bi bi-send-check-fill text-success"></i>&nbsp; Publish</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{{ url_for('poll.close_motion', id=motion.id) }}"><i class="bi bi-send-dash-fill text-success"></i>&nbsp; Close</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{{ url_for('poll.edit_motion', id=motion.id) }}"><i class="bi bi-pencil-square text-success"></i>&nbsp; Edit</a>
+                                    </li>
+                                    {% endif %}
+
+                                    {% if role.name == 'Super' %}
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <a class="dropdown-item" href="{{ url_for('poll.delete_motion', id=motion.id) }}"><i class="bi bi-trash text-danger"></i>&nbsp; Delete</a>
+                                    </li>
+                                    {% endif %}
+                                {% endfor %}
+                              </ul>  
+                            {% endif %}  
                         </td>
                     </tr>
                 {% endfor %}
