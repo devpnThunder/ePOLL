@@ -1,3 +1,3 @@
 # ePOLL APP
 _________________________________________________
-![WebApp Screenshot](/static/images/adminDash.png)
+![WebApp Screenshot](/app/static/images/adminDash.png)
